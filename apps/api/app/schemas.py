@@ -46,6 +46,32 @@ class CalculationCreate(BaseModel):
     breakdown_json: dict
 
 
+class CalculationPreviewRequest(BaseModel):
+    survey_id: UUID
+    as_of: date | None = None
+
+
+class CalculationRunRequest(BaseModel):
+    survey_id: UUID
+    methodology_version_id: UUID
+    as_of: date | None = None
+
+
+class EmissionCalculationLine(BaseModel):
+    category: str
+    activity_value: Decimal
+    activity_unit: str
+    emission_factor: Decimal
+    factor_unit: str
+    result_kgco2e: Decimal
+    formula_string: str
+
+
+class EmissionCalculationResult(BaseModel):
+    total_kgco2e: Decimal
+    lines: list[EmissionCalculationLine]
+
+
 class CalculationOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

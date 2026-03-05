@@ -12,12 +12,16 @@ from .models import BenchmarkStat, Calculation, EmissionFactor, MethodologyVersi
 from .schemas import (
     BenchmarkStatOut,
     CalculationCreate,
+    CalculationPreviewRequest,
+    CalculationRunRequest,
     CalculationOut,
+    EmissionCalculationResult,
     EmissionFactorOut,
     MethodologyVersionOut,
     SurveyCreate,
     SurveyOut,
 )
+from .services.calculation_engine import CalculationEngineError, calculate_emissions
 
 app = FastAPI(title="Carbon Calculator API", version="0.2.0")
 
@@ -88,6 +92,59 @@ def create_calculation(payload: CalculationCreate, db: Session = Depends(get_db)
         methodology_version_id=payload.methodology_version_id,
         total_kgco2e=payload.total_kgco2e,
         breakdown_json=payload.breakdown_json,
+    )
+    db.add(calculation)
+    db.commit()
+    db.refresh(calculation)
+    return calculation
+
+
+@app.post("/calculations/preview", response_model=EmissionCalculationResult)
+def preview_calculation(
+    payload: CalculationPreviewRequest, db: Session = Depends(get_db)
+) -> EmissionCalculationResult:
+    survey = db.get(Survey, payload.survey_id)
+    if survey is None:
+        raise HTTPException(status_code=404, detail="Survey not found")
+
+    try:
+        result = calculate_emissions(
+            db,
+            survey_answers=survey.answers_json,
+            survey_region=survey.country,
+            as_of=payload.as_of,
+        )
+    except CalculationEngineError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return EmissionCalculationResult(**result)
+
+
+@app.post("/calculations/run", response_model=CalculationOut, status_code=201)
+def run_calculation(payload: CalculationRunRequest, db: Session = Depends(get_db)) -> Calculation:
+    survey = db.get(Survey, payload.survey_id)
+    if survey is None:
+        raise HTTPException(status_code=404, detail="Survey not found")
+
+    methodology = db.get(MethodologyVersion, payload.methodology_version_id)
+    if methodology is None:
+        raise HTTPException(status_code=404, detail="Methodology version not found")
+
+    try:
+        breakdown = calculate_emissions(
+            db,
+            survey_answers=survey.answers_json,
+            survey_region=survey.country,
+            as_of=payload.as_of,
+        )
+    except CalculationEngineError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    calculation = Calculation(
+        survey_id=payload.survey_id,
+        methodology_version_id=payload.methodology_version_id,
+        total_kgco2e=breakdown["total_kgco2e"],
+        breakdown_json=breakdown,
     )
     db.add(calculation)
     db.commit()
