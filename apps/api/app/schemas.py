@@ -72,6 +72,17 @@ class EmissionCalculationResult(BaseModel):
     lines: list[EmissionCalculationLine]
 
 
+class CarbonIndexPreviewRequest(BaseModel):
+    survey_id: UUID
+    benchmark_year: int | None = None
+
+
+class CarbonIndexResult(BaseModel):
+    india_index: Decimal
+    world_index: Decimal
+    interpretation: str
+
+
 class CalculationOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

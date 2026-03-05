@@ -15,6 +15,8 @@ from .schemas import (
     CalculationPreviewRequest,
     CalculationRunRequest,
     CalculationOut,
+    CarbonIndexPreviewRequest,
+    CarbonIndexResult,
     EmissionCalculationResult,
     EmissionFactorOut,
     MethodologyVersionOut,
@@ -22,6 +24,7 @@ from .schemas import (
     SurveyOut,
 )
 from .services.calculation_engine import CalculationEngineError, calculate_emissions
+from .services.carbon_index import CarbonIndexError, calculate_carbon_index_for_survey
 
 app = FastAPI(title="Carbon Calculator API", version="0.2.0")
 
@@ -169,3 +172,24 @@ def list_benchmark_stats(
         query = query.filter(BenchmarkStat.year == year)
 
     return query.order_by(BenchmarkStat.year.desc(), BenchmarkStat.metric.asc()).all()
+
+
+@app.post("/carbon-index/preview", response_model=CarbonIndexResult)
+def preview_carbon_index(
+    payload: CarbonIndexPreviewRequest, db: Session = Depends(get_db)
+) -> CarbonIndexResult:
+    survey = db.get(Survey, payload.survey_id)
+    if survey is None:
+        raise HTTPException(status_code=404, detail="Survey not found")
+
+    try:
+        result = calculate_carbon_index_for_survey(
+            db,
+            survey_answers=survey.answers_json,
+            survey_region=survey.country,
+            benchmark_year=payload.benchmark_year,
+        )
+    except CarbonIndexError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return CarbonIndexResult(**result)
