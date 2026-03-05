@@ -13,6 +13,9 @@ export default function HomePage() {
       <p>
         <Link href="/methodology">View methodology</Link>
       </p>
+      <p>
+        Dashboard route: <code>/dashboard/&lt;survey-id&gt;</code>
+      </p>
     </main>
   );
 }
