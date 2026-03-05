@@ -1,0 +1,30 @@
+[
+  {
+    "id": "benchmark-annual-per-capita-co2-placeholder",
+    "category": "personal",
+    "metric": "annual_per_capita_emissions",
+    "unit": "tCO2e/year",
+    "value": 4.7,
+    "citations": [
+      {
+        "title": "Placeholder benchmark reference",
+        "url": "https://example.org/placeholder-benchmark",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "benchmark-household-electricity-monthly-placeholder",
+    "category": "household",
+    "metric": "monthly_electricity_use",
+    "unit": "kWh/month",
+    "value": 250,
+    "citations": [
+      {
+        "title": "Placeholder electricity benchmark",
+        "url": "https://example.org/placeholder-electricity-benchmark",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  }
+]

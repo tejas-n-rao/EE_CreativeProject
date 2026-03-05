@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EmissionFactor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "activity", "unit", "factor_kg_co2e_per_unit", "region", "citations"],
+  "properties": {
+    "id": { "type": "string" },
+    "activity": { "type": "string" },
+    "unit": { "type": "string" },
+    "factor_kg_co2e_per_unit": { "type": "number" },
+    "region": { "type": "string" },
+    "citations": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/citation" },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "citation": {
+      "type": "object",
+      "required": ["title", "url", "accessed_on"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "accessed_on": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

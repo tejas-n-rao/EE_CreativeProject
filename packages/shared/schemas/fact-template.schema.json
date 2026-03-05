@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FactTemplate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "template", "tags", "citations"],
+  "properties": {
+    "id": { "type": "string" },
+    "template": { "type": "string" },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "citations": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/citation" },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "citation": {
+      "type": "object",
+      "required": ["title", "url", "accessed_on"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "accessed_on": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

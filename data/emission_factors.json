@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ef-electricity-india-grid-placeholder",
+    "activity": "electricity",
+    "unit": "kWh",
+    "factor_kg_co2e_per_unit": 0.7,
+    "region": "IN",
+    "citations": [
+      {
+        "title": "Placeholder grid factor reference",
+        "url": "https://example.org/placeholder-grid-factor",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-car-travel-petrol-placeholder",
+    "activity": "car_travel",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.192,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "Placeholder passenger vehicle factor",
+        "url": "https://example.org/placeholder-car-factor",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  }
+]

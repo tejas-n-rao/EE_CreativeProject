@@ -1,0 +1,25 @@
+:root {
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  color: #16213e;
+  background: linear-gradient(180deg, #f7f9fc 0%, #e7effa 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+}
