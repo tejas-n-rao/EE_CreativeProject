@@ -24,7 +24,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/carbon
     volumes:
-      - ./apps/api/app:/workspace/apps/api/app
+      - ./apps/api:/workspace/apps/api
       - ./data:/workspace/data
     ports:
       - "8000:8000"

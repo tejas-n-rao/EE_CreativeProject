@@ -1,0 +1,62 @@
+[
+  {
+    "category": "electricity",
+    "region": "IN",
+    "unit_activity": "kWh",
+    "factor_kgco2e_per_unit": 0.7,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder grid factor reference",
+    "source_url": "https://example.org/placeholder-grid-factor",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "Placeholder grid factor reference",
+        "url": "https://example.org/placeholder-grid-factor",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "petrol_car_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.192,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder passenger vehicle factor",
+    "source_url": "https://example.org/placeholder-car-factor",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "Placeholder passenger vehicle factor",
+        "url": "https://example.org/placeholder-car-factor",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "flight_shorthaul",
+    "region": "WORLD",
+    "unit_activity": "passenger_km",
+    "factor_kgco2e_per_unit": 0.158,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder short-haul flight factor",
+    "source_url": "https://example.org/placeholder-flight-factor",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "Placeholder short-haul flight factor",
+        "url": "https://example.org/placeholder-flight-factor",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  }
+]

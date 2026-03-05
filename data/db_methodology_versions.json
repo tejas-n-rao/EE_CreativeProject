@@ -1,0 +1,14 @@
+[
+  {
+    "version_name": "v1-basic-activity-factor",
+    "equation_string": "Emissions = Activity × Emission Factor",
+    "description": "Baseline methodology using direct multiplication of activity data and region-specific emission factors.",
+    "citations": [
+      {
+        "title": "Placeholder methodology source",
+        "url": "https://example.org/placeholder-methodology",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  }
+]

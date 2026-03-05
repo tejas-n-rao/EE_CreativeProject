@@ -1,0 +1,32 @@
+[
+  {
+    "metric": "annual_per_capita_emissions",
+    "region": "WORLD",
+    "year": 2024,
+    "value_tonnes_per_person": 4.7,
+    "source_name": "Placeholder benchmark reference",
+    "source_url": "https://example.org/placeholder-benchmark",
+    "citations": [
+      {
+        "title": "Placeholder benchmark reference",
+        "url": "https://example.org/placeholder-benchmark",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "annual_per_capita_emissions",
+    "region": "IN",
+    "year": 2024,
+    "value_tonnes_per_person": 2.1,
+    "source_name": "Placeholder India benchmark reference",
+    "source_url": "https://example.org/placeholder-india-benchmark",
+    "citations": [
+      {
+        "title": "Placeholder India benchmark reference",
+        "url": "https://example.org/placeholder-india-benchmark",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  }
+]

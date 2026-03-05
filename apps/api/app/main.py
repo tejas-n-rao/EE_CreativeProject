@@ -1,13 +1,25 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
+from datetime import date
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
-app = FastAPI(title="Carbon Calculator API", version="0.1.0")
+from .db import get_db
+from .models import BenchmarkStat, Calculation, EmissionFactor, MethodologyVersion, Survey
+from .schemas import (
+    BenchmarkStatOut,
+    CalculationCreate,
+    CalculationOut,
+    EmissionFactorOut,
+    MethodologyVersionOut,
+    SurveyCreate,
+    SurveyOut,
+)
+
+app = FastAPI(title="Carbon Calculator API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,75 +29,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-ROOT_DIR = Path(__file__).resolve().parents[3]
-DATA_DIR = ROOT_DIR / "data"
-
-
-class EstimateRequest(BaseModel):
-    activity: str = Field(examples=["electricity"])
-    amount: float = Field(gt=0, examples=[250])
-    unit: str = Field(examples=["kWh"])
-
-
-class EstimateResponse(BaseModel):
-    activity: str
-    amount: float
-    unit: str
-    factor_kg_co2e_per_unit: float
-    total_kg_co2e: float
-    source_note: str
-
-
-def load_seed_file(filename: str) -> list[dict]:
-    path = DATA_DIR / filename
-    if not path.exists():
-        raise FileNotFoundError(f"Seed file not found: {path}")
-
-    with path.open("r", encoding="utf-8") as file:
-        return json.load(file)
-
 
 @app.get("/health")
-def health() -> dict[str, str]:
+def health(db: Session = Depends(get_db)) -> dict[str, str]:
+    db.execute(text("SELECT 1"))
     return {"status": "ok"}
 
 
-@app.get("/seed/{dataset}")
-def get_seed(dataset: str) -> list[dict]:
-    filename = f"{dataset}.json"
-    try:
-        return load_seed_file(filename)
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+@app.get("/emission-factors", response_model=list[EmissionFactorOut])
+def list_emission_factors(
+    category: str | None = None,
+    region: str | None = None,
+    as_of: date | None = Query(default=None),
+    db: Session = Depends(get_db),
+) -> list[EmissionFactor]:
+    query = db.query(EmissionFactor)
 
-
-@app.post("/estimate", response_model=EstimateResponse)
-def estimate(request: EstimateRequest) -> EstimateResponse:
-    factors = load_seed_file("emission_factors.json")
-    match = next(
-        (
-            item
-            for item in factors
-            if item["activity"].lower() == request.activity.lower()
-            and item["unit"].lower() == request.unit.lower()
-        ),
-        None,
-    )
-
-    if not match:
-        raise HTTPException(
-            status_code=400,
-            detail=f"No factor found for activity={request.activity}, unit={request.unit}",
+    if category:
+        query = query.filter(EmissionFactor.category == category)
+    if region:
+        query = query.filter(EmissionFactor.region == region)
+    if as_of:
+        query = query.filter(EmissionFactor.valid_from <= as_of).filter(
+            (EmissionFactor.valid_to.is_(None)) | (EmissionFactor.valid_to >= as_of)
         )
 
-    factor = float(match["factor_kg_co2e_per_unit"])
-    total = round(request.amount * factor, 4)
+    return query.order_by(
+        EmissionFactor.category, EmissionFactor.region, EmissionFactor.valid_from
+    ).all()
 
-    return EstimateResponse(
-        activity=request.activity,
-        amount=request.amount,
-        unit=request.unit,
-        factor_kg_co2e_per_unit=factor,
-        total_kg_co2e=total,
-        source_note="Placeholder seed factor; replace with validated datasets for production use.",
+
+@app.get("/methodology-versions", response_model=list[MethodologyVersionOut])
+def list_methodology_versions(db: Session = Depends(get_db)) -> list[MethodologyVersion]:
+    return db.query(MethodologyVersion).order_by(MethodologyVersion.created_at.desc()).all()
+
+
+@app.post("/surveys", response_model=SurveyOut, status_code=201)
+def create_survey(payload: SurveyCreate, db: Session = Depends(get_db)) -> Survey:
+    survey = Survey(country=payload.country, answers_json=payload.answers_json)
+    db.add(survey)
+    db.commit()
+    db.refresh(survey)
+    return survey
+
+
+@app.post("/calculations", response_model=CalculationOut, status_code=201)
+def create_calculation(payload: CalculationCreate, db: Session = Depends(get_db)) -> Calculation:
+    survey = db.get(Survey, payload.survey_id)
+    if survey is None:
+        raise HTTPException(status_code=404, detail="Survey not found")
+
+    methodology = db.get(MethodologyVersion, payload.methodology_version_id)
+    if methodology is None:
+        raise HTTPException(status_code=404, detail="Methodology version not found")
+
+    calculation = Calculation(
+        survey_id=payload.survey_id,
+        methodology_version_id=payload.methodology_version_id,
+        total_kgco2e=payload.total_kgco2e,
+        breakdown_json=payload.breakdown_json,
     )
+    db.add(calculation)
+    db.commit()
+    db.refresh(calculation)
+    return calculation
+
+
+@app.get("/benchmark-stats", response_model=list[BenchmarkStatOut])
+def list_benchmark_stats(
+    metric: str | None = None,
+    region: str | None = None,
+    year: int | None = None,
+    db: Session = Depends(get_db),
+) -> list[BenchmarkStat]:
+    query = db.query(BenchmarkStat)
+
+    if metric:
+        query = query.filter(BenchmarkStat.metric == metric)
+    if region:
+        query = query.filter(BenchmarkStat.region == region)
+    if year is not None:
+        query = query.filter(BenchmarkStat.year == year)
+
+    return query.order_by(BenchmarkStat.year.desc(), BenchmarkStat.metric.asc()).all()
