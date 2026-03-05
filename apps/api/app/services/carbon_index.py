@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 from sqlalchemy.orm import Session
@@ -96,27 +97,39 @@ def _get_benchmark_value_tonnes(
     return Decimal(str(stat.value_tonnes_per_person))
 
 
+def get_benchmarks_for_index(
+    db: Session, *, benchmark_year: int | None = None
+) -> dict[str, Decimal]:
+    india_value = _get_benchmark_value_tonnes(db, region="IN", year=benchmark_year)
+    world_value = _get_benchmark_value_tonnes(db, region="WORLD", year=benchmark_year)
+    return {
+        "india_per_capita_emissions_tonnes": india_value,
+        "world_per_capita_emissions_tonnes": world_value,
+    }
+
+
 def calculate_carbon_index_for_survey(
     db: Session,
     *,
     survey_answers: dict,
     survey_region: str,
     benchmark_year: int | None = None,
+    as_of: date | None = None,
 ) -> dict:
     try:
         emissions_breakdown = calculate_emissions(
             db,
             survey_answers=survey_answers,
             survey_region=survey_region,
+            as_of=as_of,
         )
     except CalculationEngineError as exc:
         raise CarbonIndexError(str(exc)) from exc
 
-    india_benchmark = _get_benchmark_value_tonnes(db, region="IN", year=benchmark_year)
-    world_benchmark = _get_benchmark_value_tonnes(db, region="WORLD", year=benchmark_year)
+    benchmarks = get_benchmarks_for_index(db, benchmark_year=benchmark_year)
 
     return calculate_carbon_index(
         monthly_footprint_kgco2e=emissions_breakdown["total_kgco2e"],
-        india_per_capita_emissions_tonnes=india_benchmark,
-        world_per_capita_emissions_tonnes=world_benchmark,
+        india_per_capita_emissions_tonnes=benchmarks["india_per_capita_emissions_tonnes"],
+        world_per_capita_emissions_tonnes=benchmarks["world_per_capita_emissions_tonnes"],
     )

@@ -83,6 +83,40 @@ class CarbonIndexResult(BaseModel):
     interpretation: str
 
 
+class SurveyCalculateRequest(BaseModel):
+    methodology_version_id: UUID | None = None
+    as_of: date | None = None
+    benchmark_year: int | None = None
+
+
+class FactCitation(BaseModel):
+    title: str
+    url: str
+    accessed_on: str
+
+
+class FactOut(BaseModel):
+    id: str
+    template: str
+    rendered_text: str
+    tags: list[str]
+    citations: list[FactCitation]
+
+
+class SurveyCalculateResponse(BaseModel):
+    survey: SurveyOut
+    calculation: CalculationOut
+    carbon_index: CarbonIndexResult
+
+
+class DashboardResponse(BaseModel):
+    survey: SurveyOut
+    calculation: CalculationOut | None
+    carbon_index: CarbonIndexResult | None
+    benchmarks: list[BenchmarkStatOut]
+    facts: list[FactOut]
+
+
 class CalculationOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
