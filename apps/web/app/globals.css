@@ -23,3 +23,93 @@ h1 {
   margin: 0 0 1rem;
   font-size: 2rem;
 }
+
+.methodology-page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.methodology-hero {
+  background: linear-gradient(135deg, #dbf5ea 0%, #f3fbf8 55%, #eaf3ff 100%);
+  border: 1px solid #bddcd1;
+  border-radius: 20px;
+  padding: 1.5rem;
+}
+
+.methodology-hero h1 {
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #146c64;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #0b4f88;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.methodology-section {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid #d1dceb;
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.methodology-section h2 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+}
+
+.methodology-section ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.equation {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+  background: #192841;
+  color: #f7fbff;
+  border-radius: 10px;
+  padding: 0.8rem 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.methodology-cards {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.methodology-card {
+  border: 1px solid #cfdcf2;
+  border-radius: 12px;
+  background: #fbfdff;
+  padding: 0.8rem;
+}
+
+.methodology-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 640px) {
+  .methodology-hero h1 {
+    font-size: 1.6rem;
+  }
+}
