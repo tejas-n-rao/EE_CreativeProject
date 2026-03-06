@@ -148,7 +148,10 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
   const [pieTooltip, setPieTooltip] = useState("Hover slices or legend items for formulas.");
   const [barTooltip, setBarTooltip] = useState("Hover bars to see comparison formulas.");
 
-  const lines = data.calculation?.breakdown_json?.lines || [];
+  const lines = useMemo<BreakdownLine[]>(
+    () => data.calculation?.breakdown_json?.lines ?? [],
+    [data.calculation?.breakdown_json?.lines],
+  );
   const monthlyFootprint = toNumber(
     data.calculation?.total_kgco2e ?? data.calculation?.breakdown_json?.total_kgco2e,
   );

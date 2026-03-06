@@ -7,6 +7,7 @@ from uuid import UUID
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -397,7 +398,16 @@ def list_benchmarks_v1(
 
 @app.get("/v1/methodology", response_model=list[MethodologyVersionOut])
 def list_methodology_v1(db: Session = Depends(get_db)) -> list[MethodologyVersion]:
-    return db.query(MethodologyVersion).order_by(MethodologyVersion.created_at.desc()).all()
+    try:
+        return db.query(MethodologyVersion).order_by(MethodologyVersion.created_at.desc()).all()
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "Methodology data is unavailable. "
+                "Run `alembic upgrade head` and `python scripts/seed_data.py`."
+            ),
+        ) from exc
 
 
 @app.get("/v1/facts", response_model=list[FactOut])

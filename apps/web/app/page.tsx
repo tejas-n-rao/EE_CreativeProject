@@ -11,6 +11,9 @@ export default function HomePage() {
         API health endpoint: <code>{apiBase}/health</code>
       </p>
       <p>
+        <Link href="/survey">Start survey</Link>
+      </p>
+      <p>
         <Link href="/methodology">View methodology</Link>
       </p>
       <p>

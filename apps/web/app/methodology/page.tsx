@@ -29,6 +29,7 @@ type MethodologyApiPayload =
     };
 
 const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const FALLBACK_EQUATION = "Emissions = Activity Data × Emission Factor";
 
 function asMethodologyItems(payload: MethodologyApiPayload): MethodologyItem[] {
   if (Array.isArray(payload)) {
@@ -84,25 +85,43 @@ async function getMethodologyData(): Promise<{
   equation: string;
   methodology: MethodologyItem[];
   sources: EmissionFactorSource[];
+  errorMessage: string | null;
 }> {
-  const response = await fetch(`${apiBase}/v1/methodology`, { cache: "no-store" });
+  try {
+    const response = await fetch(`${apiBase}/v1/methodology`, { cache: "no-store" });
 
-  if (!response.ok) {
-    throw new Error(`Failed to load methodology (${response.status})`);
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      const detail = typeof body?.detail === "string" ? body.detail : null;
+      return {
+        equation: FALLBACK_EQUATION,
+        methodology: [],
+        sources: [],
+        errorMessage:
+          detail || `Methodology API returned ${response.status}. Check API setup and seed data.`,
+      };
+    }
+
+    const payload = (await response.json()) as MethodologyApiPayload;
+    const methodology = asMethodologyItems(payload);
+    const sources = extractSourceList(payload, methodology);
+
+    const equation = methodology[0]?.equation_string || FALLBACK_EQUATION;
+
+    return { equation, methodology, sources, errorMessage: null };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "Unknown fetch error";
+    return {
+      equation: FALLBACK_EQUATION,
+      methodology: [],
+      sources: [],
+      errorMessage: `Could not reach API at ${apiBase}. ${reason}`,
+    };
   }
-
-  const payload = (await response.json()) as MethodologyApiPayload;
-  const methodology = asMethodologyItems(payload);
-  const sources = extractSourceList(payload, methodology);
-
-  const equation =
-    methodology[0]?.equation_string || "Emissions = Activity Data × Emission Factor";
-
-  return { equation, methodology, sources };
 }
 
 export default async function MethodologyPage() {
-  const { equation, methodology, sources } = await getMethodologyData();
+  const { equation, methodology, sources, errorMessage } = await getMethodologyData();
 
   return (
     <main className="methodology-page">
@@ -116,6 +135,18 @@ export default async function MethodologyPage() {
           Back to home
         </Link>
       </header>
+
+      {errorMessage && (
+        <section className="inline-warning">
+          <p>
+            <strong>Methodology data is unavailable:</strong> {errorMessage}
+          </p>
+          <p>
+            Run <code>alembic upgrade head</code> and <code>python scripts/seed_data.py</code>{" "}
+            in <code>apps/api</code>, then reload this page.
+          </p>
+        </section>
+      )}
 
       <section className="methodology-section">
         <h2>1) Calculation Method</h2>

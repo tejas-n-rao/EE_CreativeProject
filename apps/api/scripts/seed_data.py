@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import json
+import sys
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+API_DIR = Path(__file__).resolve().parents[1]
+if str(API_DIR) not in sys.path:
+    sys.path.insert(0, str(API_DIR))
 
 from app.db import SessionLocal
 from app.models import BenchmarkStat, EmissionFactor, MethodologyVersion

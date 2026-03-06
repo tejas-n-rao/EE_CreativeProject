@@ -7,6 +7,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app import models  # noqa: F401
+from app.config import settings
 from app.db import Base
 
 config = context.config
@@ -16,7 +17,7 @@ if config.config_file_name is not None:
 
 
 def get_database_url() -> str:
-    return os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+    return os.getenv("DATABASE_URL", settings.database_url)
 
 
 config.set_main_option("sqlalchemy.url", get_database_url())

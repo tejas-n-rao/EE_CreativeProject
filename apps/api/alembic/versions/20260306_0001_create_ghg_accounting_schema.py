@@ -8,7 +8,6 @@ Create Date: 2026-03-06 01:15:00
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "20260306_0001"
@@ -20,7 +19,7 @@ depends_on = None
 def upgrade() -> None:
     op.create_table(
         "emission_factors",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("category", sa.String(length=120), nullable=False),
         sa.Column("region", sa.String(length=32), nullable=False),
         sa.Column("unit_activity", sa.String(length=64), nullable=False),
@@ -33,12 +32,12 @@ def upgrade() -> None:
         sa.Column("source_url", sa.String(length=512), nullable=False),
         sa.Column("source_year", sa.Integer(), nullable=False),
         sa.Column("license_notes", sa.Text(), nullable=True),
-        sa.Column("is_placeholder", sa.Boolean(), nullable=False, server_default=sa.text("true")),
+        sa.Column("is_placeholder", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
             nullable=False,
-            server_default=sa.text("now()"),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
@@ -58,7 +57,7 @@ def upgrade() -> None:
 
     op.create_table(
         "methodology_versions",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("version_name", sa.String(length=120), nullable=False),
         sa.Column("equation_string", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
@@ -66,7 +65,7 @@ def upgrade() -> None:
             "created_at",
             sa.DateTime(timezone=True),
             nullable=False,
-            server_default=sa.text("now()"),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("version_name"),
@@ -74,14 +73,14 @@ def upgrade() -> None:
 
     op.create_table(
         "surveys",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("country", sa.String(length=32), nullable=False),
-        sa.Column("answers_json", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column("answers_json", sa.JSON(), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
             nullable=False,
-            server_default=sa.text("now()"),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
         ),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -89,16 +88,16 @@ def upgrade() -> None:
 
     op.create_table(
         "calculations",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("survey_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("methodology_version_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("survey_id", sa.Uuid(), nullable=False),
+        sa.Column("methodology_version_id", sa.Uuid(), nullable=False),
         sa.Column("total_kgco2e", sa.Numeric(precision=18, scale=6), nullable=False),
-        sa.Column("breakdown_json", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column("breakdown_json", sa.JSON(), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
             nullable=False,
-            server_default=sa.text("now()"),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
         ),
         sa.ForeignKeyConstraint(
             ["methodology_version_id"], ["methodology_versions.id"], ondelete="RESTRICT"
@@ -109,7 +108,7 @@ def upgrade() -> None:
 
     op.create_table(
         "benchmark_stats",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("metric", sa.String(length=120), nullable=False),
         sa.Column("region", sa.String(length=32), nullable=False),
         sa.Column("year", sa.Integer(), nullable=False),

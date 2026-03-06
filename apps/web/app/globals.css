@@ -68,6 +68,23 @@ h1 {
   padding: 1.25rem;
 }
 
+.inline-warning {
+  margin: 0;
+  color: #8a3c00;
+  background: #fff4e8;
+  border: 1px solid #f0c8a8;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+}
+
+.inline-warning p {
+  margin: 0;
+}
+
+.inline-warning p + p {
+  margin-top: 0.5rem;
+}
+
 .methodology-section h2 {
   margin-top: 0;
   margin-bottom: 0.8rem;
@@ -373,6 +390,138 @@ h1 {
   gap: 0.4rem;
 }
 
+.survey-page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.survey-hero {
+  background: linear-gradient(135deg, #fdf7e2 0%, #fffdf7 55%, #ebf4ff 100%);
+  border: 1px solid #e2d4a7;
+  border-radius: 20px;
+  padding: 1.5rem;
+}
+
+.survey-panel {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #d3deea;
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.survey-panel h2 {
+  margin: 0 0 0.5rem;
+}
+
+.survey-form {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.95rem;
+}
+
+.field-label {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #274865;
+  font-weight: 700;
+}
+
+.text-input {
+  width: 100%;
+  border: 1px solid #b8c9db;
+  border-radius: 10px;
+  padding: 0.58rem 0.65rem;
+  background: #fff;
+  color: #15263d;
+  font: inherit;
+}
+
+.text-input:focus {
+  outline: 2px solid #a9d2ff;
+  outline-offset: 1px;
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.activity-header h3 {
+  margin: 0;
+}
+
+.activity-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.activity-row {
+  border: 1px solid #d2deeb;
+  border-radius: 12px;
+  background: #f9fcff;
+  padding: 0.8rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: #0f5b96;
+  color: #fff;
+}
+
+.primary-button[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background: #e8f2ff;
+  color: #174775;
+  border: 1px solid #b7cde3;
+}
+
+.danger-button {
+  background: #ffeceb;
+  color: #8f251f;
+  border: 1px solid #efc1be;
+}
+
+.danger-button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-error {
+  margin: 0;
+  color: #9f1f1f;
+  background: #fff1f1;
+  border: 1px solid #edc7c7;
+  padding: 0.6rem 0.65rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 980px) {
   .dashboard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -397,5 +546,10 @@ h1 {
 
   .dashboard-card-value {
     font-size: 1.45rem;
+  }
+
+  .activity-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
   }
 }
