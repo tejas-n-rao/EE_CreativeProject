@@ -105,6 +105,8 @@ const CLASS_BENCHMARK_METRICS = {
   food: "food_per_capita_emissions",
   water: "water_per_capita_emissions",
 } as const;
+const DEFAULT_PIE_TOOLTIP =
+  "Hover slices or legend items to see category, class, percentage, and formula.";
 
 function toNumber(value: unknown, fallback = 0): number {
   const parsed = Number(value);
@@ -204,11 +206,9 @@ function TooltipCard({ label, value, unit, formula }: TooltipCardProps) {
 }
 
 export default function DashboardClient({ data }: { data: DashboardPayload }) {
-  const [pieTooltip, setPieTooltip] = useState("Hover slices or legend items for formulas.");
+  const [pieTooltip, setPieTooltip] = useState(DEFAULT_PIE_TOOLTIP);
   const [barTooltip, setBarTooltip] = useState("Hover bars to see comparison formulas.");
-  const [classTooltip, setClassTooltip] = useState(
-    "Hover bars to inspect class-level benchmark formulas.",
-  );
+  const [classTooltips, setClassTooltips] = useState<Record<string, string>>({});
 
   const lines = useMemo<BreakdownLine[]>(
     () => data.calculation?.breakdown_json?.lines ?? [],
@@ -239,6 +239,19 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
   const worldIndex = Number.isFinite(apiWorldIndex) ? apiWorldIndex : derivedWorldIndex;
 
   const pieSlices = useMemo(() => buildPieSlices(lines), [lines]);
+  const pieTotal = pieSlices.reduce((sum, slice) => sum + slice.value, 0);
+
+  function getPieTooltip(slice: PieSlice): string {
+    const classKey = classifyCategory(slice.category);
+    const classLabel = classKey ? CLASS_LABELS[classKey] : "Household / Other";
+    const percent = pieTotal > 0 ? (slice.value / pieTotal) * 100 : 0;
+
+    return (
+      `${formatCategory(slice.category)} | Class: ${classLabel} | ` +
+      `${formatNumber(slice.value, 2)} kgCO2e (${formatNumber(percent, 1)}%) | ` +
+      `Formula: ${slice.formula}`
+    );
+  }
 
   const comparisonBars = [
     {
@@ -353,12 +366,10 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
                       key={`${slice.category}-${slice.startAngle}`}
                       d={arcPath(110, 110, 90, slice.startAngle, slice.endAngle)}
                       fill={slice.color}
-                      onMouseEnter={() => setPieTooltip(slice.formula)}
-                      onFocus={() => setPieTooltip(slice.formula)}
-                      onMouseLeave={() =>
-                        setPieTooltip("Hover slices or legend items for formulas.")
-                      }
-                      onBlur={() => setPieTooltip("Hover slices or legend items for formulas.")}
+                      onMouseEnter={() => setPieTooltip(getPieTooltip(slice))}
+                      onFocus={() => setPieTooltip(getPieTooltip(slice))}
+                      onMouseLeave={() => setPieTooltip(DEFAULT_PIE_TOOLTIP)}
+                      onBlur={() => setPieTooltip(DEFAULT_PIE_TOOLTIP)}
                       tabIndex={0}
                     />
                   ))}
@@ -370,12 +381,10 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
                       <button
                         type="button"
                         className="legend-button"
-                        onMouseEnter={() => setPieTooltip(slice.formula)}
-                        onFocus={() => setPieTooltip(slice.formula)}
-                        onMouseLeave={() =>
-                          setPieTooltip("Hover slices or legend items for formulas.")
-                        }
-                        onBlur={() => setPieTooltip("Hover slices or legend items for formulas.")}
+                        onMouseEnter={() => setPieTooltip(getPieTooltip(slice))}
+                        onFocus={() => setPieTooltip(getPieTooltip(slice))}
+                        onMouseLeave={() => setPieTooltip(DEFAULT_PIE_TOOLTIP)}
+                        onBlur={() => setPieTooltip(DEFAULT_PIE_TOOLTIP)}
                       >
                         <span style={{ backgroundColor: slice.color }} />
                         <strong>{formatCategory(slice.category)}</strong>
@@ -394,7 +403,7 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
 
         <article className="chart-card">
           <h2>Comparison (You vs India vs World)</h2>
-          <div className="bar-chart">
+          <div className="bar-chart global-bar-chart">
             {comparisonBars.map((bar) => {
               const height = Math.max((bar.value / maxComparison) * 100, 3);
 
@@ -420,79 +429,94 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
           </div>
           <p className="chart-tooltip">{barTooltip}</p>
         </article>
+      </section>
 
-        <article className="chart-card">
-          <h2>Class Benchmarks (Annual Tonnes)</h2>
-          <div className="class-comparison-grid">
-            {classComparisons.map((classItem) => {
-              const bars = [
-                {
-                  label: "You",
-                  value: classItem.user,
-                  color: "#2c7da0",
-                  formula:
-                    `${classItem.label}: user annual tonnes = ` +
-                    `${formatNumber(classMonthlyKg[classItem.classKey], 2)} kg/mo × 12 / 1000`,
-                },
-                {
-                  label: "India",
-                  value: classItem.india,
-                  color: "#70a37f",
-                  formula:
-                    `${classItem.label}: India benchmark = ` +
-                    `${formatNumber(classItem.india, 4)} tCO2e/person/year`,
-                },
-                {
-                  label: "World",
-                  value: classItem.world,
-                  color: "#f2c14e",
-                  formula:
-                    `${classItem.label}: World benchmark = ` +
-                    `${formatNumber(classItem.world, 4)} tCO2e/person/year`,
-                },
-              ];
-              const rowMax = Math.max(...bars.map((bar) => bar.value), 0.001);
+      <section className="class-shell-section">
+        <h2>Class Benchmarks (Annual Tonnes)</h2>
+        <div className="class-shell-grid">
+          {classComparisons.map((classItem) => {
+            const defaultTooltip = `Hover ${classItem.label.toLowerCase()} bars to inspect class-level benchmark formulas.`;
+            const bars = [
+              {
+                label: "You",
+                value: classItem.user,
+                color: "#2c7da0",
+                formula:
+                  `${classItem.label}: user annual tonnes = ` +
+                  `${formatNumber(classMonthlyKg[classItem.classKey], 2)} kg/mo × 12 / 1000`,
+              },
+              {
+                label: "India",
+                value: classItem.india,
+                color: "#70a37f",
+                formula:
+                  `${classItem.label}: India benchmark = ` +
+                  `${formatNumber(classItem.india, 4)} tCO2e/person/year`,
+              },
+              {
+                label: "World",
+                value: classItem.world,
+                color: "#f2c14e",
+                formula:
+                  `${classItem.label}: World benchmark = ` +
+                  `${formatNumber(classItem.world, 4)} tCO2e/person/year`,
+              },
+            ];
+            const rowMax = Math.max(...bars.map((bar) => bar.value), 0.001);
 
-              return (
-                <section key={classItem.classKey} className="class-comparison-item">
-                  <h3>{classItem.label}</h3>
-                  <div className="bar-chart class-bar-chart">
-                    {bars.map((bar) => {
-                      const height = Math.max((bar.value / rowMax) * 100, 3);
-                      return (
-                        <div key={`${classItem.classKey}-${bar.label}`} className="bar-item">
-                          <div className="bar-track">
-                            <button
-                              type="button"
-                              className="bar-fill"
-                              style={{ height: `${height}%`, background: bar.color }}
-                              onMouseEnter={() => setClassTooltip(bar.formula)}
-                              onFocus={() => setClassTooltip(bar.formula)}
-                              onMouseLeave={() =>
-                                setClassTooltip(
-                                  "Hover bars to inspect class-level benchmark formulas.",
-                                )
-                              }
-                              onBlur={() =>
-                                setClassTooltip(
-                                  "Hover bars to inspect class-level benchmark formulas.",
-                                )
-                              }
-                              aria-label={`${classItem.label} ${bar.label} benchmark bar`}
-                            />
-                          </div>
-                          <strong>{bar.label}</strong>
-                          <span>{formatNumber(bar.value, 4)} tCO2e</span>
+            return (
+              <article key={classItem.classKey} className="chart-card class-shell-card">
+                <h3>{classItem.label}</h3>
+                <div className="bar-chart class-bar-chart">
+                  {bars.map((bar) => {
+                    const height = Math.max((bar.value / rowMax) * 100, 3);
+                    return (
+                      <div key={`${classItem.classKey}-${bar.label}`} className="bar-item">
+                        <div className="bar-track">
+                          <button
+                            type="button"
+                            className="bar-fill"
+                            style={{ height: `${height}%`, background: bar.color }}
+                            onMouseEnter={() =>
+                              setClassTooltips((current) => ({
+                                ...current,
+                                [classItem.classKey]: bar.formula,
+                              }))
+                            }
+                            onFocus={() =>
+                              setClassTooltips((current) => ({
+                                ...current,
+                                [classItem.classKey]: bar.formula,
+                              }))
+                            }
+                            onMouseLeave={() =>
+                              setClassTooltips((current) => ({
+                                ...current,
+                                [classItem.classKey]: defaultTooltip,
+                              }))
+                            }
+                            onBlur={() =>
+                              setClassTooltips((current) => ({
+                                ...current,
+                                [classItem.classKey]: defaultTooltip,
+                              }))
+                            }
+                            aria-label={`${classItem.label} ${bar.label} benchmark bar`}
+                          />
                         </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-          <p className="chart-tooltip">{classTooltip}</p>
-        </article>
+                        <strong>{bar.label}</strong>
+                        <span>{formatNumber(bar.value, 4)} tCO2e</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="chart-tooltip class-tooltip">
+                  {classTooltips[classItem.classKey] ?? defaultTooltip}
+                </p>
+              </article>
+            );
+          })}
+        </div>
       </section>
 
       {data.facts.length > 0 && (

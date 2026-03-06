@@ -155,10 +155,10 @@ export default function SurveyForm() {
 
   return (
     <section className="survey-panel">
-      <h2>Monthly Survey</h2>
+      <h2>Monthly Calculator</h2>
       <p>
-        Enter monthly activity values directly. This advanced form supports transport, utility, and
-        livelihood categories.
+        Enter monthly activity values directly from bills and records. This advanced form supports
+        transport, utility, and livelihood categories.
       </p>
 
       <form onSubmit={handleSubmit} className="survey-form">

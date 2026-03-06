@@ -6,11 +6,14 @@ export default function SurveyPage() {
   return (
     <main className="survey-page">
       <header className="survey-hero">
-        <p className="eyebrow">Monthly Survey</p>
-        <h1>Monthly Survey (Advanced)</h1>
-        <p>Enter measured monthly values for transport, utilities, and lifestyle categories.</p>
-        <Link href="/accessible-survey" className="back-link">
-          Prefer weekly lifestyle inputs? Open Accessible Survey
+        <p className="eyebrow">Monthly Calculator</p>
+        <h1>Monthly Calculator (Advanced)</h1>
+        <p>
+          Best when you have bills and measured records. Enter monthly values for transport,
+          utilities, and lifestyle categories.
+        </p>
+        <Link href="/weekly-survey" className="back-link">
+          Prefer quick weekly inputs? Open Weekly Calculator
         </Link>
         <br />
         <Link href="/methodology" className="back-link">

@@ -262,7 +262,7 @@ export default function AccessibleSurveyForm() {
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : "Unexpected error while submitting accessible survey.",
+            : "Unexpected error while submitting weekly calculator form.",
         );
       }
     } finally {
@@ -272,7 +272,7 @@ export default function AccessibleSurveyForm() {
 
   return (
     <section className="survey-panel">
-      <h2>Accessible Survey</h2>
+      <h2>Weekly Calculator</h2>
       <p className="survey-help">
         Weekly inputs are converted using: <code>monthly = weekly × 4.345</code>. Flights are
         annualized then divided by 12.
