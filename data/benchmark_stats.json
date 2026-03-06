@@ -1,28 +1,122 @@
 [
   {
-    "id": "benchmark-annual-per-capita-co2-placeholder",
-    "category": "personal",
+    "id": "benchmark-world-annual-per-capita-ghg-2024",
+    "category": "world",
     "metric": "annual_per_capita_emissions",
-    "unit": "tCO2e/year",
-    "value": 4.7,
+    "unit": "tCO2e/person/year",
+    "value": 6.6691,
     "citations": [
       {
-        "title": "Placeholder benchmark reference",
-        "url": "https://example.org/placeholder-benchmark",
+        "title": "Our World in Data: Per capita greenhouse gas emissions",
+        "url": "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
         "accessed_on": "2026-03-06"
       }
     ]
   },
   {
-    "id": "benchmark-household-electricity-monthly-placeholder",
-    "category": "household",
-    "metric": "monthly_electricity_use",
-    "unit": "kWh/month",
-    "value": 250,
+    "id": "benchmark-india-annual-per-capita-ghg-2024",
+    "category": "india",
+    "metric": "annual_per_capita_emissions",
+    "unit": "tCO2e/person/year",
+    "value": 2.9377,
     "citations": [
       {
-        "title": "Placeholder electricity benchmark",
-        "url": "https://example.org/placeholder-electricity-benchmark",
+        "title": "Our World in Data: Per capita greenhouse gas emissions",
+        "url": "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "benchmark-world-transport-per-capita-2023",
+    "category": "world",
+    "metric": "transport_per_capita_emissions",
+    "unit": "tCO2e/person/year",
+    "value": 1.0228,
+    "citations": [
+      {
+        "title": "Our World in Data: Transport CO2 per capita",
+        "url": "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "benchmark-india-transport-per-capita-2023",
+    "category": "india",
+    "metric": "transport_per_capita_emissions",
+    "unit": "tCO2e/person/year",
+    "value": 0.2461,
+    "citations": [
+      {
+        "title": "Our World in Data: Transport CO2 per capita",
+        "url": "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "benchmark-world-food-per-capita-2015",
+    "category": "world",
+    "metric": "food_per_capita_emissions",
+    "unit": "tCO2e/person/year",
+    "value": 2.407,
+    "citations": [
+      {
+        "title": "Our World in Data: Greenhouse gas emissions from food",
+        "url": "https://ourworldindata.org/grapher/emissions-from-food.csv",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Population, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "benchmark-india-food-per-capita-2015",
+    "category": "india",
+    "metric": "food_per_capita_emissions",
+    "unit": "tCO2e/person/year",
+    "value": 0.8487,
+    "citations": [
+      {
+        "title": "Our World in Data: Greenhouse gas emissions from food",
+        "url": "https://ourworldindata.org/grapher/emissions-from-food.csv",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Population, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "benchmark-world-water-per-capita-2021",
+    "category": "world",
+    "metric": "water_per_capita_emissions",
+    "unit": "tCO2e/person/year",
+    "value": 0.0225,
+    "citations": [
+      {
+        "title": "World Bank: Annual freshwater withdrawals and domestic share",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "benchmark-india-water-per-capita-2022",
+    "category": "india",
+    "metric": "water_per_capita_emissions",
+    "unit": "tCO2e/person/year",
+    "value": 0.0115,
+    "citations": [
+      {
+        "title": "World Bank: Annual freshwater withdrawals and domestic share",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
         "accessed_on": "2026-03-06"
       }
     ]

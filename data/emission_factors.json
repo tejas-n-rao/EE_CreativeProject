@@ -7,22 +7,148 @@
     "region": "IN",
     "citations": [
       {
-        "title": "Placeholder grid factor reference",
-        "url": "https://example.org/placeholder-grid-factor",
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
         "accessed_on": "2026-03-06"
       }
     ]
   },
   {
-    "id": "ef-car-travel-petrol-placeholder",
-    "activity": "car_travel",
+    "id": "ef-water-supply-placeholder",
+    "activity": "water_supply_m3",
+    "unit": "m3",
+    "factor_kg_co2e_per_unit": 0.344,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-petrol-car-km-placeholder",
+    "activity": "petrol_car_km",
     "unit": "km",
     "factor_kg_co2e_per_unit": 0.192,
     "region": "Global",
     "citations": [
       {
-        "title": "Placeholder passenger vehicle factor",
-        "url": "https://example.org/placeholder-car-factor",
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-bus-km-placeholder",
+    "activity": "bus_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.089,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-metro-km-placeholder",
+    "activity": "metro_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.041,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-rail-km-placeholder",
+    "activity": "rail_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.035,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-two-wheeler-km-placeholder",
+    "activity": "two_wheeler_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.072,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-ride-hailing-km-placeholder",
+    "activity": "ride_hailing_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.18,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-flight-shorthaul-placeholder",
+    "activity": "flight_shorthaul",
+    "unit": "passenger_km",
+    "factor_kg_co2e_per_unit": 0.158,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-lpg-kg-placeholder",
+    "activity": "lpg_kg",
+    "unit": "kg",
+    "factor_kg_co2e_per_unit": 2.983,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "ef-diet-mixed-day-placeholder",
+    "activity": "diet_mixed_day",
+    "unit": "person_day",
+    "factor_kg_co2e_per_unit": 2.8,
+    "region": "Global",
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
         "accessed_on": "2026-03-06"
       }
     ]

@@ -215,7 +215,9 @@ h1 {
   visibility: hidden;
   opacity: 0;
   transform: translateY(-4px);
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
   z-index: 3;
 }
 
@@ -341,7 +343,9 @@ h1 {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
 }
 
 .bar-fill:hover,
@@ -358,6 +362,28 @@ h1 {
 .bar-item span {
   font-size: 0.78rem;
   color: #365371;
+}
+
+.class-comparison-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.class-comparison-item {
+  border: 1px solid #d3deea;
+  border-radius: 12px;
+  background: #f9fcff;
+  padding: 0.7rem 0.75rem;
+}
+
+.class-comparison-item h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.class-bar-chart {
+  height: 165px;
+  margin-top: 0;
 }
 
 .chart-tooltip {
@@ -416,6 +442,12 @@ h1 {
   margin: 0 0 0.5rem;
 }
 
+.survey-help {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: #294a66;
+}
+
 .survey-form {
   margin-top: 1rem;
   display: grid;
@@ -472,6 +504,32 @@ h1 {
   grid-template-columns: 2fr 1fr 1fr auto;
   gap: 0.65rem;
   align-items: end;
+}
+
+.activity-row-single {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.activity-preview {
+  border: 1px solid #d2deeb;
+  border-radius: 12px;
+  background: #f9fcff;
+  padding: 0.8rem 0.9rem;
+}
+
+.activity-preview h3 {
+  margin: 0 0 0.5rem;
+}
+
+.activity-preview p {
+  margin: 0;
+}
+
+.activity-preview ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.25rem;
 }
 
 .primary-button,

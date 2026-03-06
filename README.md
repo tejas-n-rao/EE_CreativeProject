@@ -130,7 +130,8 @@ npm --workspace apps/web run dev
 ### Open in Browser
 
 - Web app: `http://localhost:3000`
-- Survey form: `http://localhost:3000/survey`
+- Accessible survey: `http://localhost:3000/accessible-survey`
+- Monthly survey: `http://localhost:3000/monthly-survey`
 - API docs: `http://localhost:8000/docs`
 
 ### Quick Check Commands
@@ -221,6 +222,25 @@ pip install -r apps/api/requirements.txt
 - Benchmarks are per-capita annual values in `tonnes CO2e/person`.
 - Index calculations convert user annual emissions from kg to tonnes before comparison.
 - Placeholder seed datasets are intentionally small and include `citations` metadata.
+- Accessible survey converts weekly lifestyle travel into monthly activity using `weekly × 4.345`.
+- Accessible survey converts annual flights to monthly activity using `annual ÷ 12`.
+- Accessible survey replaces abstract low/medium/high profiles with concrete prompts (household size, AC hours/day, showers/week, laundry loads/week, and home-cooked meals/week).
+- Monthly survey supports expanded transport and livelihood categories (bus, metro, rail, two-wheeler, ride-hailing, LPG, diet profiles).
+- Dashboard includes class-level annual benchmark comparison for transportation, food, and water consumption (User vs India vs World).
+
+### Benchmark Sources (Verified 2026-03-06)
+
+- Total annual per-capita GHG benchmark:
+  - OWID per-capita GHG (including land use): `https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv`
+- Transportation class benchmark:
+  - OWID transport CO2 per capita: `https://ourworldindata.org/grapher/per-capita-co2-transport.csv`
+- Food class benchmark:
+  - OWID food emissions totals: `https://ourworldindata.org/grapher/emissions-from-food.csv`
+  - World Bank population (for per-capita derivation): `https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400`
+- Water class benchmark:
+  - World Bank total freshwater withdrawals: `https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400`
+  - World Bank domestic withdrawal share: `https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWDM.ZS?format=json&per_page=400`
+  - World Bank population (for per-capita derivation): `https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400`
 
 ## Main API Endpoints
 

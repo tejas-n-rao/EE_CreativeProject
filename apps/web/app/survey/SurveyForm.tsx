@@ -19,14 +19,28 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
 
 const CATEGORY_PRESETS: CategoryPreset[] = [
   { category: "electricity", label: "Electricity", units: ["kWh"] },
-  { category: "petrol_car_km", label: "Petrol Car Travel", units: ["km"] },
+  { category: "water_supply_m3", label: "Water Supply", units: ["m3"] },
+  { category: "lpg_kg", label: "Cooking Gas (LPG)", units: ["kg"] },
+  { category: "petrol_car_km", label: "Petrol Car", units: ["km"] },
+  { category: "diesel_car_km", label: "Diesel Car", units: ["km"] },
+  { category: "two_wheeler_km", label: "Two-wheeler", units: ["km"] },
+  { category: "bus_km", label: "Bus", units: ["km"] },
+  { category: "metro_km", label: "Metro", units: ["km"] },
+  { category: "rail_km", label: "Rail", units: ["km"] },
+  { category: "ride_hailing_km", label: "Ride-hailing", units: ["km"] },
   { category: "flight_shorthaul", label: "Short-haul Flight", units: ["passenger_km"] },
+  { category: "diet_plant_based_day", label: "Diet: Plant-based Days", units: ["person_day"] },
+  { category: "diet_mixed_day", label: "Diet: Mixed Days", units: ["person_day"] },
+  { category: "diet_meat_heavy_day", label: "Diet: Meat-heavy Days", units: ["person_day"] },
 ];
 
 function initialActivities(): ActivityInput[] {
   return [
     { category: "electricity", unit: "kWh", value: "240" },
-    { category: "petrol_car_km", unit: "km", value: "180" },
+    { category: "water_supply_m3", unit: "m3", value: "12" },
+    { category: "petrol_car_km", unit: "km", value: "120" },
+    { category: "bus_km", unit: "km", value: "80" },
+    { category: "diet_mixed_day", unit: "person_day", value: "30" },
   ];
 }
 
@@ -51,10 +65,7 @@ export default function SurveyForm() {
   }
 
   function addActivity() {
-    setActivities((current) => [
-      ...current,
-      { category: "electricity", unit: "kWh", value: "" },
-    ]);
+    setActivities((current) => [...current, { category: "electricity", unit: "kWh", value: "" }]);
   }
 
   function removeActivity(index: number) {
@@ -134,9 +145,7 @@ export default function SurveyForm() {
         );
       } else {
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Unexpected error while submitting survey.",
+          error instanceof Error ? error.message : "Unexpected error while submitting survey.",
         );
       }
     } finally {
@@ -146,10 +155,10 @@ export default function SurveyForm() {
 
   return (
     <section className="survey-panel">
-      <h2>Survey Form</h2>
+      <h2>Monthly Survey</h2>
       <p>
-        Values are monthly activity data. The app applies:{" "}
-        <code>Emissions = Activity × Factor</code>.
+        Enter monthly activity values directly. This advanced form supports transport, utility, and
+        livelihood categories.
       </p>
 
       <form onSubmit={handleSubmit} className="survey-form">
@@ -166,7 +175,7 @@ export default function SurveyForm() {
         />
 
         <div className="activity-header">
-          <h3>Activity Rows</h3>
+          <h3>Monthly Activity Rows</h3>
           <button type="button" className="secondary-button" onClick={addActivity}>
             + Add Activity
           </button>
@@ -244,7 +253,7 @@ export default function SurveyForm() {
         {errorMessage && <p className="form-error">{errorMessage}</p>}
 
         <button type="submit" className="primary-button" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Create Survey + Calculate"}
+          {isSubmitting ? "Submitting..." : "Calculate Monthly Footprint"}
         </button>
       </form>
     </section>

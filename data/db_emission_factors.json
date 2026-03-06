@@ -6,15 +6,35 @@
     "factor_kgco2e_per_unit": 0.7,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder grid factor reference",
-    "source_url": "https://example.org/placeholder-grid-factor",
+    "source_name": "Placeholder electricity factor (i2SEA-inspired)",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
     "source_year": 2025,
     "license_notes": "Placeholder data for development only.",
     "is_placeholder": true,
     "citations": [
       {
-        "title": "Placeholder grid factor reference",
-        "url": "https://example.org/placeholder-grid-factor",
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "water_supply_m3",
+    "region": "WORLD",
+    "unit_activity": "m3",
+    "factor_kgco2e_per_unit": 0.344,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder water treatment factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
         "accessed_on": "2026-03-06"
       }
     ]
@@ -27,14 +47,134 @@
     "valid_from": "2025-01-01",
     "valid_to": null,
     "source_name": "Placeholder passenger vehicle factor",
-    "source_url": "https://example.org/placeholder-car-factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
     "source_year": 2025,
     "license_notes": "Placeholder data for development only.",
     "is_placeholder": true,
     "citations": [
       {
-        "title": "Placeholder passenger vehicle factor",
-        "url": "https://example.org/placeholder-car-factor",
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "diesel_car_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.171,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder diesel vehicle factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "bus_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.089,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder bus transit factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "metro_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.041,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder metro transit factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "rail_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.035,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder rail transit factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "two_wheeler_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.072,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder two-wheeler factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "ride_hailing_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.18,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder ride-hailing factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
         "accessed_on": "2026-03-06"
       }
     ]
@@ -47,14 +187,94 @@
     "valid_from": "2025-01-01",
     "valid_to": null,
     "source_name": "Placeholder short-haul flight factor",
-    "source_url": "https://example.org/placeholder-flight-factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
     "source_year": 2025,
     "license_notes": "Placeholder data for development only.",
     "is_placeholder": true,
     "citations": [
       {
-        "title": "Placeholder short-haul flight factor",
-        "url": "https://example.org/placeholder-flight-factor",
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "lpg_kg",
+    "region": "WORLD",
+    "unit_activity": "kg",
+    "factor_kgco2e_per_unit": 2.983,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder LPG factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "diet_plant_based_day",
+    "region": "WORLD",
+    "unit_activity": "person_day",
+    "factor_kgco2e_per_unit": 1.8,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder low-carbon diet factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "diet_mixed_day",
+    "region": "WORLD",
+    "unit_activity": "person_day",
+    "factor_kgco2e_per_unit": 2.8,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder mixed diet factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "category": "diet_meat_heavy_day",
+    "region": "WORLD",
+    "unit_activity": "person_day",
+    "factor_kgco2e_per_unit": 4.2,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Placeholder high-meat diet factor",
+    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_year": 2025,
+    "license_notes": "Placeholder data for development only.",
+    "is_placeholder": true,
+    "citations": [
+      {
+        "title": "i2SEA calculator reference",
+        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
         "accessed_on": "2026-03-06"
       }
     ]

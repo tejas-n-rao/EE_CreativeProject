@@ -62,6 +62,49 @@ type TooltipCardProps = {
 };
 
 const PIE_COLORS = ["#2c7da0", "#70a37f", "#f2c14e", "#e46c5c", "#7d6ee7", "#008585"];
+const CATEGORY_LABELS: Record<string, string> = {
+  electricity: "Electricity",
+  water_supply_m3: "Water Supply",
+  lpg_kg: "Cooking Gas (LPG)",
+  petrol_car_km: "Petrol Car",
+  diesel_car_km: "Diesel Car",
+  two_wheeler_km: "Two-wheeler",
+  bus_km: "Bus",
+  metro_km: "Metro",
+  rail_km: "Rail",
+  ride_hailing_km: "Ride-hailing",
+  flight_shorthaul: "Short-haul Flight",
+  diet_plant_based_day: "Diet (Plant-based)",
+  diet_mixed_day: "Diet (Mixed)",
+  diet_meat_heavy_day: "Diet (Meat-heavy)",
+};
+const TRANSPORT_CATEGORIES = new Set([
+  "petrol_car_km",
+  "diesel_car_km",
+  "two_wheeler_km",
+  "bus_km",
+  "metro_km",
+  "rail_km",
+  "ride_hailing_km",
+  "flight_shorthaul",
+]);
+const FOOD_CATEGORIES = new Set([
+  "diet_plant_based_day",
+  "diet_mixed_day",
+  "diet_meat_heavy_day",
+  "lpg_kg",
+]);
+const WATER_CATEGORIES = new Set(["water_supply_m3"]);
+const CLASS_LABELS = {
+  transport: "Transportation",
+  food: "Food",
+  water: "Water Consumption",
+} as const;
+const CLASS_BENCHMARK_METRICS = {
+  transport: "transport_per_capita_emissions",
+  food: "food_per_capita_emissions",
+  water: "water_per_capita_emissions",
+} as const;
 
 function toNumber(value: unknown, fallback = 0): number {
   const parsed = Number(value);
@@ -73,6 +116,23 @@ function formatNumber(value: number, maxFraction = 2): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: maxFraction,
   }).format(value);
+}
+
+function formatCategory(category: string): string {
+  return CATEGORY_LABELS[category] || category.replace(/_/g, " ");
+}
+
+function classifyCategory(category: string): keyof typeof CLASS_LABELS | null {
+  if (TRANSPORT_CATEGORIES.has(category)) {
+    return "transport";
+  }
+  if (FOOD_CATEGORIES.has(category)) {
+    return "food";
+  }
+  if (WATER_CATEGORIES.has(category)) {
+    return "water";
+  }
+  return null;
 }
 
 function polarToCartesian(cx: number, cy: number, radius: number, angle: number) {
@@ -132,8 +192,7 @@ function TooltipCard({ label, value, unit, formula }: TooltipCardProps) {
       <header className="dashboard-card-header">
         <h3>{label}</h3>
         <button type="button" className="tooltip-trigger" aria-label={`${label} formula`}>
-          i
-          <span className="tooltip-bubble">{formula}</span>
+          i<span className="tooltip-bubble">{formula}</span>
         </button>
       </header>
       <p className="dashboard-card-value">
@@ -147,6 +206,9 @@ function TooltipCard({ label, value, unit, formula }: TooltipCardProps) {
 export default function DashboardClient({ data }: { data: DashboardPayload }) {
   const [pieTooltip, setPieTooltip] = useState("Hover slices or legend items for formulas.");
   const [barTooltip, setBarTooltip] = useState("Hover bars to see comparison formulas.");
+  const [classTooltip, setClassTooltip] = useState(
+    "Hover bars to inspect class-level benchmark formulas.",
+  );
 
   const lines = useMemo<BreakdownLine[]>(
     () => data.calculation?.breakdown_json?.lines ?? [],
@@ -202,6 +264,39 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
   ];
 
   const maxComparison = Math.max(...comparisonBars.map((item) => item.value), 1);
+  const classMonthlyKg = lines.reduce(
+    (acc, line) => {
+      const classKey = classifyCategory(line.category);
+      if (!classKey) {
+        return acc;
+      }
+      acc[classKey] += toNumber(line.result_kgco2e);
+      return acc;
+    },
+    { transport: 0, food: 0, water: 0 },
+  );
+  const classComparisons = (Object.keys(CLASS_LABELS) as Array<keyof typeof CLASS_LABELS>).map(
+    (classKey) => {
+      const metric = CLASS_BENCHMARK_METRICS[classKey];
+      const india = toNumber(
+        data.benchmarks.find((item) => item.metric === metric && item.region === "IN")
+          ?.value_tonnes_per_person,
+      );
+      const world = toNumber(
+        data.benchmarks.find((item) => item.metric === metric && item.region === "WORLD")
+          ?.value_tonnes_per_person,
+      );
+      const userTonnes = (classMonthlyKg[classKey] * 12) / 1000;
+
+      return {
+        classKey,
+        label: CLASS_LABELS[classKey],
+        user: userTonnes,
+        india,
+        world,
+      };
+    },
+  );
 
   return (
     <>
@@ -263,9 +358,7 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
                       onMouseLeave={() =>
                         setPieTooltip("Hover slices or legend items for formulas.")
                       }
-                      onBlur={() =>
-                        setPieTooltip("Hover slices or legend items for formulas.")
-                      }
+                      onBlur={() => setPieTooltip("Hover slices or legend items for formulas.")}
                       tabIndex={0}
                     />
                   ))}
@@ -282,12 +375,10 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
                         onMouseLeave={() =>
                           setPieTooltip("Hover slices or legend items for formulas.")
                         }
-                        onBlur={() =>
-                          setPieTooltip("Hover slices or legend items for formulas.")
-                        }
+                        onBlur={() => setPieTooltip("Hover slices or legend items for formulas.")}
                       >
                         <span style={{ backgroundColor: slice.color }} />
-                        <strong>{slice.category}</strong>
+                        <strong>{formatCategory(slice.category)}</strong>
                         <em>{formatNumber(slice.value)} kgCO2e</em>
                       </button>
                     </li>
@@ -328,6 +419,79 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
             })}
           </div>
           <p className="chart-tooltip">{barTooltip}</p>
+        </article>
+
+        <article className="chart-card">
+          <h2>Class Benchmarks (Annual Tonnes)</h2>
+          <div className="class-comparison-grid">
+            {classComparisons.map((classItem) => {
+              const bars = [
+                {
+                  label: "You",
+                  value: classItem.user,
+                  color: "#2c7da0",
+                  formula:
+                    `${classItem.label}: user annual tonnes = ` +
+                    `${formatNumber(classMonthlyKg[classItem.classKey], 2)} kg/mo × 12 / 1000`,
+                },
+                {
+                  label: "India",
+                  value: classItem.india,
+                  color: "#70a37f",
+                  formula:
+                    `${classItem.label}: India benchmark = ` +
+                    `${formatNumber(classItem.india, 4)} tCO2e/person/year`,
+                },
+                {
+                  label: "World",
+                  value: classItem.world,
+                  color: "#f2c14e",
+                  formula:
+                    `${classItem.label}: World benchmark = ` +
+                    `${formatNumber(classItem.world, 4)} tCO2e/person/year`,
+                },
+              ];
+              const rowMax = Math.max(...bars.map((bar) => bar.value), 0.001);
+
+              return (
+                <section key={classItem.classKey} className="class-comparison-item">
+                  <h3>{classItem.label}</h3>
+                  <div className="bar-chart class-bar-chart">
+                    {bars.map((bar) => {
+                      const height = Math.max((bar.value / rowMax) * 100, 3);
+                      return (
+                        <div key={`${classItem.classKey}-${bar.label}`} className="bar-item">
+                          <div className="bar-track">
+                            <button
+                              type="button"
+                              className="bar-fill"
+                              style={{ height: `${height}%`, background: bar.color }}
+                              onMouseEnter={() => setClassTooltip(bar.formula)}
+                              onFocus={() => setClassTooltip(bar.formula)}
+                              onMouseLeave={() =>
+                                setClassTooltip(
+                                  "Hover bars to inspect class-level benchmark formulas.",
+                                )
+                              }
+                              onBlur={() =>
+                                setClassTooltip(
+                                  "Hover bars to inspect class-level benchmark formulas.",
+                                )
+                              }
+                              aria-label={`${classItem.label} ${bar.label} benchmark bar`}
+                            />
+                          </div>
+                          <strong>{bar.label}</strong>
+                          <span>{formatNumber(bar.value, 4)} tCO2e</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+          <p className="chart-tooltip">{classTooltip}</p>
         </article>
       </section>
 

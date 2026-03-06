@@ -6,12 +6,15 @@ export default function HomePage() {
   return (
     <main className="container">
       <h1>Carbon Calculator</h1>
-      <p>Monorepo scaffold is ready.</p>
+      <p>Choose a survey mode to estimate your footprint.</p>
       <p>
         API health endpoint: <code>{apiBase}/health</code>
       </p>
       <p>
-        <Link href="/survey">Start survey</Link>
+        <Link href="/accessible-survey">Start Accessible Survey</Link>
+      </p>
+      <p>
+        <Link href="/monthly-survey">Start Monthly Survey</Link>
       </p>
       <p>
         <Link href="/methodology">View methodology</Link>
