@@ -30,6 +30,171 @@ type MethodologyApiPayload =
 
 const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const FALLBACK_EQUATION = "Emissions = Activity Data × Emission Factor";
+const BENCHMARK_CITATIONS = [
+  {
+    label: "OWID per-capita GHG emissions (including land-use change)",
+    url: "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
+  },
+  {
+    label: "OWID transport CO2 emissions per capita",
+    url: "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
+  },
+  {
+    label: "OWID emissions from food",
+    url: "https://ourworldindata.org/grapher/emissions-from-food.csv",
+  },
+  {
+    label: "World Bank population (SP.POP.TOTL)",
+    url: "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
+  },
+  {
+    label: "World Bank total freshwater withdrawals (ER.H2O.FWTL.K3)",
+    url: "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
+  },
+  {
+    label: "World Bank domestic freshwater withdrawal share (ER.H2O.FWDM.ZS)",
+    url: "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWDM.ZS?format=json&per_page=400",
+  },
+];
+
+type ActivityFactorRow = {
+  category: string;
+  activity: string;
+  unit: string;
+  factor: string;
+  region: string;
+  source_name: string;
+  source_url: string;
+};
+
+const ACTIVITY_FACTOR_ROWS: ActivityFactorRow[] = [
+  {
+    category: "electricity",
+    activity: "Electricity",
+    unit: "kWh",
+    factor: "0.700",
+    region: "IN",
+    source_name: "Placeholder electricity factor (i2SEA-inspired)",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "water_supply_m3",
+    activity: "Water Supply",
+    unit: "m3",
+    factor: "0.344",
+    region: "WORLD",
+    source_name: "Placeholder water treatment factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "petrol_car_km",
+    activity: "Petrol Car",
+    unit: "km",
+    factor: "0.192",
+    region: "WORLD",
+    source_name: "Placeholder passenger vehicle factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "diesel_car_km",
+    activity: "Diesel Car",
+    unit: "km",
+    factor: "0.171",
+    region: "WORLD",
+    source_name: "Placeholder diesel vehicle factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "bus_km",
+    activity: "Bus",
+    unit: "km",
+    factor: "0.089",
+    region: "WORLD",
+    source_name: "Placeholder bus transit factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "metro_km",
+    activity: "Metro",
+    unit: "km",
+    factor: "0.041",
+    region: "WORLD",
+    source_name: "Placeholder metro transit factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "rail_km",
+    activity: "Rail",
+    unit: "km",
+    factor: "0.035",
+    region: "WORLD",
+    source_name: "Placeholder rail transit factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "two_wheeler_km",
+    activity: "Two-wheeler",
+    unit: "km",
+    factor: "0.072",
+    region: "WORLD",
+    source_name: "Placeholder two-wheeler factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "ride_hailing_km",
+    activity: "Ride-hailing",
+    unit: "km",
+    factor: "0.180",
+    region: "WORLD",
+    source_name: "Placeholder ride-hailing factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "flight_shorthaul",
+    activity: "Short-haul flight",
+    unit: "passenger_km",
+    factor: "0.158",
+    region: "WORLD",
+    source_name: "Placeholder short-haul flight factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "lpg_kg",
+    activity: "Cooking Gas (LPG)",
+    unit: "kg",
+    factor: "2.983",
+    region: "WORLD",
+    source_name: "Placeholder LPG factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "diet_plant_based_day",
+    activity: "Diet (Plant-based)",
+    unit: "person_day",
+    factor: "1.800",
+    region: "WORLD",
+    source_name: "Placeholder low-carbon diet factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "diet_mixed_day",
+    activity: "Diet (Mixed)",
+    unit: "person_day",
+    factor: "2.800",
+    region: "WORLD",
+    source_name: "Placeholder mixed diet factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+  {
+    category: "diet_meat_heavy_day",
+    activity: "Diet (Meat-heavy)",
+    unit: "person_day",
+    factor: "4.200",
+    region: "WORLD",
+    source_name: "Placeholder high-meat diet factor",
+    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+  },
+];
 
 function asMethodologyItems(payload: MethodologyApiPayload): MethodologyItem[] {
   if (Array.isArray(payload)) {
@@ -182,7 +347,49 @@ export default async function MethodologyPage() {
       </section>
 
       <section className="methodology-section">
-        <h2>2) Data Sources</h2>
+        <h2>2) Activity Reference Factors (kgCO2e per unit)</h2>
+        <p>
+          Current seed factors used by the calculator. These values are placeholders for
+          development and should be replaced with validated regional datasets before production use.
+        </p>
+        <div className="methodology-table-wrap">
+          <table className="methodology-table">
+            <thead>
+              <tr>
+                <th>Activity</th>
+                <th>Category Key</th>
+                <th>Unit</th>
+                <th>Factor (kgCO2e/unit)</th>
+                <th>Region</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ACTIVITY_FACTOR_ROWS.map((row) => (
+                <tr key={`${row.category}-${row.region}-${row.unit}`}>
+                  <td>{row.activity}</td>
+                  <td>
+                    <code>{row.category}</code>
+                  </td>
+                  <td>
+                    <code>{row.unit}</code>
+                  </td>
+                  <td>{row.factor}</td>
+                  <td>{row.region}</td>
+                  <td>
+                    <a href={row.source_url} target="_blank" rel="noreferrer">
+                      {row.source_name}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="methodology-section">
+        <h2>3) Data Sources</h2>
         {sources.length > 0 ? (
           <ul>
             {sources.map((source) => (
@@ -202,7 +409,7 @@ export default async function MethodologyPage() {
       </section>
 
       <section className="methodology-section">
-        <h2>3) Benchmarks</h2>
+        <h2>4) Benchmarks</h2>
         <p>
           The app annualizes monthly emissions and compares them to per-capita annual
           benchmarks for India and the world. Carbon indexes are computed as ratio-based
@@ -211,7 +418,21 @@ export default async function MethodologyPage() {
       </section>
 
       <section className="methodology-section">
-        <h2>4) Limitations</h2>
+        <h2>5) Benchmark Citations (from README)</h2>
+        <p>Verified reference links used for benchmark derivations and comparisons.</p>
+        <ul>
+          {BENCHMARK_CITATIONS.map((citation) => (
+            <li key={citation.url}>
+              <a href={citation.url} target="_blank" rel="noreferrer">
+                {citation.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="methodology-section">
+        <h2>6) Limitations</h2>
         <ul>
           <li>
             <strong>Averages:</strong> Per-capita benchmarks are population averages and do

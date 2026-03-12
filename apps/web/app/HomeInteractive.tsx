@@ -24,6 +24,7 @@ export default function HomeInteractive({
 }) {
   const [activePane, setActivePane] = useState(0);
   const [expandedCard, setExpandedCard] = useState<string | null>(facts[0]?.id ?? null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const hasFacts = facts.length > 0;
   const safePane = hasFacts ? activePane % facts.length : 0;
   const activeFact = hasFacts ? facts[safePane] : null;
@@ -48,6 +49,25 @@ export default function HomeInteractive({
     return () => window.clearInterval(intervalId);
   }, [facts.length]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const syncTheme = () => {
+      setIsDarkMode(root.getAttribute("data-theme") === "dark");
+    };
+
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+
+  function movePane(step: number) {
+    if (!hasFacts) {
+      return;
+    }
+    setActivePane((current) => (current + step + facts.length) % facts.length);
+  }
+
   return (
     <section className="interactive-section">
       <header>
@@ -58,10 +78,23 @@ export default function HomeInteractive({
       <article className="sweep-pane">
         <div className="sweep-pane-header">
           <h3>Fun Facts</h3>
+          {isDarkMode && hasFacts && facts.length > 1 && (
+            <div className="sweep-controls">
+              <button type="button" className="secondary-button" onClick={() => movePane(-1)}>
+                Previous
+              </button>
+              <button type="button" className="secondary-button" onClick={() => movePane(1)}>
+                Next
+              </button>
+            </div>
+          )}
         </div>
 
         {activeFact ? (
-          <div className="sweep-pane-content">
+          <div
+            key={`${activeFact.id}-${safePane}`}
+            className={`sweep-pane-content ${isDarkMode ? "sweep-pane-content-animated" : ""}`}
+          >
             <p className="fact-tag">{toTagLabel(activeFact.tag)}</p>
             <h3>{activeFact.title}</h3>
             <p>{activeFact.climate_fact}</p>

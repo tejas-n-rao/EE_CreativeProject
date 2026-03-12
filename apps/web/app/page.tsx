@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import HomeInteractive, { type FunFactTemplate } from "./HomeInteractive";
 
-const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const templatePath = path.resolve(process.cwd(), "..", "..", "data", "fun_facts_template.csv");
 
 function parseCsvRow(row: string): string[] {
@@ -160,19 +159,7 @@ export default async function HomePage() {
             Open monthly mode
           </Link>
         </article>
-
-        <article className="mode-card">
-          <h2>API and Dashboard</h2>
-          <p>
-            API health endpoint: <code>{apiBase}/health</code>
-          </p>
-          <p>
-            Dashboard route: <code>/dashboard/&lt;survey-id&gt;</code>
-          </p>
-        </article>
       </section>
-
-      <HomeInteractive facts={facts} />
 
       <section className="definitions-section">
         <h2>Important Definitions</h2>
@@ -221,6 +208,8 @@ export default async function HomePage() {
           </article>
         </div>
       </section>
+
+      <HomeInteractive facts={facts} />
     </main>
   );
 }

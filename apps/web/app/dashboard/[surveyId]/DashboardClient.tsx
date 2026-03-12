@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export type DashboardPayload = {
   survey: {
@@ -107,6 +107,7 @@ const CLASS_BENCHMARK_METRICS = {
 } as const;
 const DEFAULT_PIE_TOOLTIP =
   "Hover slices or legend items to see category, class, percentage, and formula.";
+const DEFAULT_COMPARISON_TOOLTIP = "Hover bars to see comparison formulas.";
 
 function toNumber(value: unknown, fallback = 0): number {
   const parsed = Number(value);
@@ -205,10 +206,37 @@ function TooltipCard({ label, value, unit, formula }: TooltipCardProps) {
   );
 }
 
+function actionHintForCategory(category: string): string {
+  if (category === "petrol_car_km" || category === "diesel_car_km") {
+    return "Shift a share of weekly car travel to transit or pooled rides.";
+  }
+  if (category === "two_wheeler_km" || category === "ride_hailing_km") {
+    return "Batch short trips and replace a few with walking/cycling.";
+  }
+  if (category === "electricity") {
+    return "Reduce AC runtime and improve appliance efficiency settings.";
+  }
+  if (category === "flight_shorthaul") {
+    return "Consolidate short flights and prioritize rail for feasible routes.";
+  }
+  if (category === "lpg_kg") {
+    return "Improve cooking fuel efficiency through meal batching.";
+  }
+  if (category === "water_supply_m3") {
+    return "Lower shower and laundry water demand where possible.";
+  }
+  if (category.startsWith("diet_")) {
+    return "Increase lower-emission meals and reduce high-footprint food waste.";
+  }
+  return "Trim this activity category with a weekly reduction target.";
+}
+
 export default function DashboardClient({ data }: { data: DashboardPayload }) {
   const [pieTooltip, setPieTooltip] = useState(DEFAULT_PIE_TOOLTIP);
-  const [barTooltip, setBarTooltip] = useState("Hover bars to see comparison formulas.");
+  const [barTooltip, setBarTooltip] = useState(DEFAULT_COMPARISON_TOOLTIP);
   const [classTooltips, setClassTooltips] = useState<Record<string, string>>({});
+  const [scenarioCategory, setScenarioCategory] = useState("");
+  const [scenarioReductionPct, setScenarioReductionPct] = useState(30);
 
   const lines = useMemo<BreakdownLine[]>(
     () => data.calculation?.breakdown_json?.lines ?? [],
@@ -310,6 +338,62 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
       };
     },
   );
+  const scenarioOptions = useMemo(
+    () =>
+      lines
+        .map((line) => ({
+          category: line.category,
+          label: formatCategory(line.category),
+          value: Math.max(toNumber(line.result_kgco2e), 0),
+        }))
+        .filter((line) => line.value > 0),
+    [lines],
+  );
+  const defaultScenarioCategory =
+    scenarioOptions.find((option) => option.category === "petrol_car_km")?.category ||
+    scenarioOptions[0]?.category ||
+    "";
+
+  useEffect(() => {
+    if (!scenarioOptions.some((option) => option.category === scenarioCategory)) {
+      setScenarioCategory(defaultScenarioCategory);
+    }
+  }, [defaultScenarioCategory, scenarioCategory, scenarioOptions]);
+
+  const activeScenario =
+    scenarioOptions.find((option) => option.category === scenarioCategory) || null;
+  const scenarioReductionKg = activeScenario
+    ? (activeScenario.value * scenarioReductionPct) / 100
+    : 0;
+  const scenarioMonthly = Math.max(monthlyFootprint - scenarioReductionKg, 0);
+  const scenarioAnnual = scenarioMonthly * 12;
+  const scenarioAnnualTonnes = scenarioAnnual / 1000;
+  const scenarioDeltaPct = monthlyFootprint > 0 ? (scenarioReductionKg / monthlyFootprint) * 100 : 0;
+  const reportActionItems = [...lines]
+    .sort((left, right) => toNumber(right.result_kgco2e) - toNumber(left.result_kgco2e))
+    .slice(0, 3)
+    .map((line) => ({
+      category: line.category,
+      label: formatCategory(line.category),
+      kg: Math.max(toNumber(line.result_kgco2e), 0),
+      action: actionHintForCategory(line.category),
+    }));
+
+  function handleExportPdf() {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    setPieTooltip(DEFAULT_PIE_TOOLTIP);
+    setBarTooltip(DEFAULT_COMPARISON_TOOLTIP);
+    setClassTooltips({});
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.print();
+      });
+    });
+  }
 
   return (
     <>
@@ -403,21 +487,21 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
 
         <article className="chart-card">
           <h2>Comparison (You vs India vs World)</h2>
-          <div className="bar-chart global-bar-chart">
+                <div className="bar-chart global-bar-chart">
             {comparisonBars.map((bar) => {
               const height = Math.max((bar.value / maxComparison) * 100, 3);
 
               return (
                 <div key={bar.label} className="bar-item">
                   <div className="bar-track">
-                    <button
-                      type="button"
+                    <div
                       className="bar-fill"
                       style={{ height: `${height}%`, background: bar.color }}
                       onMouseEnter={() => setBarTooltip(bar.formula)}
                       onFocus={() => setBarTooltip(bar.formula)}
-                      onMouseLeave={() => setBarTooltip("Hover bars to see comparison formulas.")}
-                      onBlur={() => setBarTooltip("Hover bars to see comparison formulas.")}
+                      onMouseLeave={() => setBarTooltip(DEFAULT_COMPARISON_TOOLTIP)}
+                      onBlur={() => setBarTooltip(DEFAULT_COMPARISON_TOOLTIP)}
+                      tabIndex={0}
                       aria-label={`${bar.label} comparison bar`}
                     />
                   </div>
@@ -473,8 +557,7 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
                     return (
                       <div key={`${classItem.classKey}-${bar.label}`} className="bar-item">
                         <div className="bar-track">
-                          <button
-                            type="button"
+                          <div
                             className="bar-fill"
                             style={{ height: `${height}%`, background: bar.color }}
                             onMouseEnter={() =>
@@ -501,6 +584,7 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
                                 [classItem.classKey]: defaultTooltip,
                               }))
                             }
+                            tabIndex={0}
                             aria-label={`${classItem.label} ${bar.label} benchmark bar`}
                           />
                         </div>
@@ -516,6 +600,139 @@ export default function DashboardClient({ data }: { data: DashboardPayload }) {
               </article>
             );
           })}
+        </div>
+      </section>
+
+      <section className="scenario-shell">
+        <h2>Scenario Simulator</h2>
+        <p className="survey-help">
+          Live preview for &quot;what-if&quot; changes. Example: reduce car km by 30%.
+        </p>
+        {scenarioOptions.length > 0 && activeScenario ? (
+          <div className="scenario-grid">
+            <article className="scenario-card">
+              <h3>Scenario Inputs</h3>
+              <label className="field-label" htmlFor="scenario-category-select">
+                Category
+              </label>
+              <select
+                id="scenario-category-select"
+                className="text-input"
+                value={scenarioCategory}
+                onChange={(event) => setScenarioCategory(event.target.value)}
+              >
+                {scenarioOptions.map((option) => (
+                  <option key={option.category} value={option.category}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+
+              <label className="field-label" htmlFor="scenario-reduction-range">
+                Reduction ({scenarioReductionPct}%)
+              </label>
+              <input
+                id="scenario-reduction-range"
+                className="scenario-range"
+                type="range"
+                min={0}
+                max={80}
+                step={1}
+                value={scenarioReductionPct}
+                onChange={(event) => setScenarioReductionPct(Number(event.target.value))}
+              />
+            </article>
+
+            <article className="scenario-card">
+              <h3>Live Preview</h3>
+              <p>
+                <strong>Selected line:</strong> {activeScenario.label}
+              </p>
+              <p>
+                <strong>Baseline monthly:</strong> {formatNumber(monthlyFootprint)} kgCO2e
+              </p>
+              <p>
+                <strong>Projected monthly:</strong> {formatNumber(scenarioMonthly)} kgCO2e
+              </p>
+              <p>
+                <strong>Projected annual:</strong> {formatNumber(scenarioAnnualTonnes, 3)} tCO2e
+              </p>
+              <p className="scenario-impact">
+                Impact: -{formatNumber(scenarioReductionKg, 2)} kgCO2e/month (
+                {formatNumber(scenarioDeltaPct, 1)}% of current total)
+              </p>
+            </article>
+          </div>
+        ) : (
+          <p>No category lines available for scenario simulation yet.</p>
+        )}
+      </section>
+
+      <section className="report-shell">
+        <div className="report-shell-header">
+          <div>
+            <h2>Shareable Report</h2>
+            <p className="survey-help">
+              Export a PDF snapshot including charts, definitions, and action priorities.
+            </p>
+          </div>
+          <button type="button" className="secondary-button report-export-button" onClick={handleExportPdf}>
+            Export PDF Report
+          </button>
+        </div>
+
+        <div className="report-summary-grid">
+          <article className="report-stat-card">
+            <h3>Monthly</h3>
+            <p>{formatNumber(monthlyFootprint)} kgCO2e</p>
+          </article>
+          <article className="report-stat-card">
+            <h3>Annual</h3>
+            <p>{formatNumber(annualTonnes, 3)} tCO2e</p>
+          </article>
+          <article className="report-stat-card">
+            <h3>India Index</h3>
+            <p>{formatNumber(indiaIndex, 1)}</p>
+          </article>
+          <article className="report-stat-card">
+            <h3>World Index</h3>
+            <p>{formatNumber(worldIndex, 1)}</p>
+          </article>
+        </div>
+
+        <div className="report-columns">
+          <article className="report-card">
+            <h3>Priority Actions</h3>
+            {reportActionItems.length > 0 ? (
+              <ol>
+                {reportActionItems.map((item) => (
+                  <li key={item.category}>
+                    <strong>{item.label}</strong> ({formatNumber(item.kg, 2)} kgCO2e/mo): {item.action}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p>No calculated category lines available yet.</p>
+            )}
+          </article>
+
+          <article className="report-card">
+            <h3>Definitions</h3>
+            <ul>
+              <li>
+                <strong>kgCO2e:</strong> kilograms of CO2-equivalent emissions.
+              </li>
+              <li>
+                <strong>tCO2e:</strong> tonnes of CO2-equivalent; 1 tCO2e = 1000 kgCO2e.
+              </li>
+              <li>
+                <strong>Carbon Index:</strong> your annual emissions versus benchmark annual per-capita emissions.
+              </li>
+              <li>
+                <strong>Emission Factor:</strong> conversion multiplier from activity units to emissions.
+              </li>
+            </ul>
+          </article>
         </div>
       </section>
 
