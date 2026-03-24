@@ -7,6 +7,12 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from sqlalchemy.orm import Session
 
 from app.models import EmissionFactor
+from app.services.emission_factor_sheet import (
+    EmissionFactorSheetError,
+    FactorSheetRow,
+    find_sheet_row,
+    load_factor_sheet_rows,
+)
 
 ROUNDING_QUANT = Decimal("0.0001")
 
@@ -20,6 +26,17 @@ class ActivityData:
     category: str
     activity_value: Decimal
     activity_unit: str
+
+
+@dataclass(frozen=True)
+class ResolvedEmissionFactor:
+    factor_kgco2e_per_unit: Decimal
+    unit_activity: str
+    source_name: str
+    source_url: str
+    source_year: int | None
+    region: str
+    is_custom_override: bool
 
 
 def _to_decimal(value: object, field: str) -> Decimal:
@@ -140,6 +157,75 @@ def _find_best_factor(
     return None
 
 
+def resolve_emission_factor(
+    db: Session,
+    *,
+    category: str,
+    activity_unit: str,
+    region: str,
+    as_of: date,
+    sheet_rows: list[FactorSheetRow] | None = None,
+) -> ResolvedEmissionFactor | None:
+    rows = sheet_rows if sheet_rows is not None else load_factor_sheet_rows()
+    custom_row = find_sheet_row(
+        rows,
+        category=category,
+        unit_activity=activity_unit,
+        region=region,
+        require_custom_override=True,
+    )
+    if custom_row is not None and custom_row.custom_factor_kgco2e_per_unit is not None:
+        return ResolvedEmissionFactor(
+            factor_kgco2e_per_unit=custom_row.custom_factor_kgco2e_per_unit,
+            unit_activity=custom_row.unit_activity,
+            source_name=custom_row.custom_source_name
+            or custom_row.default_source_name
+            or "Custom Excel override",
+            source_url=custom_row.custom_source_url or custom_row.default_source_url or "",
+            source_year=custom_row.custom_source_year or custom_row.default_source_year,
+            region=custom_row.region,
+            is_custom_override=True,
+        )
+
+    factor = _find_best_factor(
+        db,
+        category=category,
+        activity_unit=activity_unit,
+        region=region,
+        as_of=as_of,
+    )
+    if factor is not None:
+        return ResolvedEmissionFactor(
+            factor_kgco2e_per_unit=Decimal(str(factor.factor_kgco2e_per_unit)),
+            unit_activity=factor.unit_activity,
+            source_name=factor.source_name,
+            source_url=factor.source_url,
+            source_year=factor.source_year,
+            region=factor.region,
+            is_custom_override=False,
+        )
+
+    default_row = find_sheet_row(
+        rows,
+        category=category,
+        unit_activity=activity_unit,
+        region=region,
+        require_custom_override=False,
+    )
+    if default_row is not None:
+        return ResolvedEmissionFactor(
+            factor_kgco2e_per_unit=default_row.default_factor_kgco2e_per_unit,
+            unit_activity=default_row.unit_activity,
+            source_name=default_row.default_source_name,
+            source_url=default_row.default_source_url,
+            source_year=default_row.default_source_year,
+            region=default_row.region,
+            is_custom_override=False,
+        )
+
+    return None
+
+
 def calculate_emissions(
     db: Session,
     *,
@@ -148,6 +234,10 @@ def calculate_emissions(
     as_of: date | None = None,
 ) -> dict:
     effective_date = as_of or date.today()
+    try:
+        sheet_rows = load_factor_sheet_rows()
+    except EmissionFactorSheetError as exc:
+        raise CalculationEngineError(str(exc)) from exc
 
     # 1) Extract activity data from survey answers.
     activity_rows = extract_activity_data(survey_answers)
@@ -157,14 +247,15 @@ def calculate_emissions(
 
     for activity in activity_rows:
         # 2) Match activity category to emission factor.
-        factor = _find_best_factor(
+        resolved_factor = resolve_emission_factor(
             db,
             category=activity.category,
             activity_unit=activity.activity_unit,
             region=survey_region,
             as_of=effective_date,
+            sheet_rows=sheet_rows,
         )
-        if factor is None:
+        if resolved_factor is None:
             raise CalculationEngineError(
                 f"No emission factor found for category={activity.category}, "
                 "unit="
@@ -172,14 +263,14 @@ def calculate_emissions(
                 f"as_of={effective_date.isoformat()}"
             )
 
-        emission_factor = Decimal(str(factor.factor_kgco2e_per_unit))
+        emission_factor = resolved_factor.factor_kgco2e_per_unit
 
         # 3) Calculate emissions per category: Emissions = Activity × Emission Factor.
         result_kgco2e = (activity.activity_value * emission_factor).quantize(
             ROUNDING_QUANT, rounding=ROUND_HALF_UP
         )
 
-        factor_unit = f"kgCO2e/{factor.unit_activity}"
+        factor_unit = f"kgCO2e/{resolved_factor.unit_activity}"
         formula_string = (
             f"{_format_decimal(activity.activity_value)} {activity.activity_unit} × "
             f"{_format_decimal(emission_factor)} {factor_unit} = "

@@ -9,8 +9,7 @@ type LifestyleMode =
   | "two_wheeler_km"
   | "bus_km"
   | "metro_km"
-  | "rail_km"
-  | "ride_hailing_km";
+  | "rail_km";
 
 type DietProfile = "diet_plant_based_day" | "diet_mixed_day" | "diet_meat_heavy_day";
 
@@ -31,7 +30,6 @@ const MODE_LABELS: Record<LifestyleMode, string> = {
   bus_km: "Bus",
   metro_km: "Metro",
   rail_km: "Rail",
-  ride_hailing_km: "Ride-hailing",
 };
 
 const DIET_LABELS: Record<DietProfile, string> = {
@@ -92,7 +90,6 @@ export default function AccessibleSurveyForm() {
   const [metroKmWeekly, setMetroKmWeekly] = useState("15");
   const [railKmWeekly, setRailKmWeekly] = useState("0");
   const [twoWheelerKmWeekly, setTwoWheelerKmWeekly] = useState("10");
-  const [rideHailingKmWeekly, setRideHailingKmWeekly] = useState("8");
 
   const [flightsPerYear, setFlightsPerYear] = useState("2");
   const [avgFlightDistanceKm, setAvgFlightDistanceKm] = useState("900");
@@ -148,12 +145,6 @@ export default function AccessibleSurveyForm() {
         "km",
         toMonthlyKm(parsePositiveNumber(twoWheelerKmWeekly, "Extra two-wheeler km per week")),
       );
-      addActivity(
-        totals,
-        "ride_hailing_km",
-        "km",
-        toMonthlyKm(parsePositiveNumber(rideHailingKmWeekly, "Extra ride-hailing km per week")),
-      );
 
       const flightCount = parsePositiveNumber(flightsPerYear, "Flights per year");
       const avgFlightKm = parsePositiveNumber(avgFlightDistanceKm, "Average flight distance");
@@ -203,7 +194,6 @@ export default function AccessibleSurveyForm() {
     metroKmWeekly,
     primaryCommuteMode,
     railKmWeekly,
-    rideHailingKmWeekly,
     showersPerWeek,
     laundryLoadsPerWeek,
     twoWheelerKmWeekly,
@@ -393,18 +383,6 @@ export default function AccessibleSurveyForm() {
                 step="any"
                 value={twoWheelerKmWeekly}
                 onChange={(event) => setTwoWheelerKmWeekly(event.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="field-label">Extra ride-hailing km per week</label>
-              <input
-                className="text-input"
-                type="number"
-                min="0"
-                step="any"
-                value={rideHailingKmWeekly}
-                onChange={(event) => setRideHailingKmWeekly(event.target.value)}
               />
             </div>
           </article>

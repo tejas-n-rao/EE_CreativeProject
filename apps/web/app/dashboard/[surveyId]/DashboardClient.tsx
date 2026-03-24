@@ -72,7 +72,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   bus_km: "Bus",
   metro_km: "Metro",
   rail_km: "Rail",
-  ride_hailing_km: "Ride-hailing",
   flight_shorthaul: "Short-haul Flight",
   diet_plant_based_day: "Diet (Plant-based)",
   diet_mixed_day: "Diet (Mixed)",
@@ -85,7 +84,6 @@ const TRANSPORT_CATEGORIES = new Set([
   "bus_km",
   "metro_km",
   "rail_km",
-  "ride_hailing_km",
   "flight_shorthaul",
 ]);
 const FOOD_CATEGORIES = new Set([
@@ -210,7 +208,7 @@ function actionHintForCategory(category: string): string {
   if (category === "petrol_car_km" || category === "diesel_car_km") {
     return "Shift a share of weekly car travel to transit or pooled rides.";
   }
-  if (category === "two_wheeler_km" || category === "ride_hailing_km") {
+  if (category === "two_wheeler_km") {
     return "Batch short trips and replace a few with walking/cycling.";
   }
   if (category === "electricity") {

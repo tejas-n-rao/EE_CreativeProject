@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export type FunFactTemplate = {
   id: string;
@@ -9,6 +9,9 @@ export type FunFactTemplate = {
   livelihood_link: string;
   action_prompt: string;
   tag: string;
+  source_title?: string;
+  source_url?: string;
+  source_accessed_on?: string;
 };
 
 function toTagLabel(tag: string): string {
@@ -23,19 +26,10 @@ export default function HomeInteractive({
   facts: FunFactTemplate[];
 }) {
   const [activePane, setActivePane] = useState(0);
-  const [expandedCard, setExpandedCard] = useState<string | null>(facts[0]?.id ?? null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const hasFacts = facts.length > 0;
   const safePane = hasFacts ? activePane % facts.length : 0;
   const activeFact = hasFacts ? facts[safePane] : null;
-
-  const tagSummary = useMemo(() => {
-    return facts.reduce<Record<string, number>>((counts, fact) => {
-      const key = fact.tag || "general";
-      counts[key] = (counts[key] || 0) + 1;
-      return counts;
-    }, {});
-  }, [facts]);
 
   useEffect(() => {
     if (facts.length <= 1) {
@@ -44,7 +38,7 @@ export default function HomeInteractive({
 
     const intervalId = window.setInterval(() => {
       setActivePane((current) => (current + 1) % facts.length);
-    }, 5500);
+    }, 12000);
 
     return () => window.clearInterval(intervalId);
   }, [facts.length]);
@@ -78,11 +72,14 @@ export default function HomeInteractive({
       <article className="sweep-pane">
         <div className="sweep-pane-header">
           <h3>Fun Facts</h3>
-          {isDarkMode && hasFacts && facts.length > 1 && (
+          {hasFacts && facts.length > 1 && (
             <div className="sweep-controls">
               <button type="button" className="secondary-button" onClick={() => movePane(-1)}>
                 Previous
               </button>
+              <span>
+                {safePane + 1} / {facts.length}
+              </span>
               <button type="button" className="secondary-button" onClick={() => movePane(1)}>
                 Next
               </button>
@@ -102,46 +99,24 @@ export default function HomeInteractive({
             <p>
               <strong>Action:</strong> {activeFact.action_prompt}
             </p>
+            {(activeFact.source_title || activeFact.source_url) && (
+              <p className="fact-source">
+                <strong>Source:</strong>{" "}
+                {activeFact.source_url ? (
+                  <a href={activeFact.source_url} target="_blank" rel="noreferrer">
+                    {activeFact.source_title || activeFact.source_url}
+                  </a>
+                ) : (
+                  activeFact.source_title
+                )}
+                {activeFact.source_accessed_on ? ` (accessed ${activeFact.source_accessed_on})` : ""}
+              </p>
+            )}
           </div>
         ) : (
           <p>Add rows to the template file to populate this section.</p>
         )}
       </article>
-
-      <section className="flashcard-grid">
-        {facts.map((fact) => {
-          const isExpanded = expandedCard === fact.id;
-          return (
-            <article key={fact.id} className={`flashcard ${isExpanded ? "is-expanded" : ""}`}>
-              <button
-                type="button"
-                className="flashcard-button"
-                onClick={() => setExpandedCard(isExpanded ? null : fact.id)}
-              >
-                <p className="fact-tag">{toTagLabel(fact.tag)}</p>
-                <h3>{fact.title}</h3>
-                <p>{fact.climate_fact}</p>
-                {isExpanded && (
-                  <>
-                    <p>{fact.livelihood_link}</p>
-                    <p>
-                      <strong>Action:</strong> {fact.action_prompt}
-                    </p>
-                  </>
-                )}
-              </button>
-            </article>
-          );
-        })}
-      </section>
-
-      <footer className="template-summary">
-        {Object.entries(tagSummary).map(([tag, count]) => (
-          <span key={tag}>
-            {toTagLabel(tag)}: {count}
-          </span>
-        ))}
-      </footer>
     </section>
   );
 }

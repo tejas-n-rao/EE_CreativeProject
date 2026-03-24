@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import sys
+import os
+import tempfile
 import unittest
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
+from openpyxl import Workbook
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -141,7 +144,7 @@ class CalculationEngineTestCase(unittest.TestCase):
     def test_calculate_emissions_raises_when_factor_missing(self) -> None:
         survey_answers = {
             "activities": [
-                {"category": "diesel_car_km", "value": 100, "unit": "km"},
+                {"category": "unknown_category", "value": 100, "unit": "km"},
             ]
         }
 
@@ -152,6 +155,69 @@ class CalculationEngineTestCase(unittest.TestCase):
                 survey_region="IN",
                 as_of=date(2025, 1, 1),
             )
+
+    def test_calculate_emissions_prefers_custom_excel_override(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workbook_path = Path(temp_dir) / "emission_factors.xlsx"
+            workbook = Workbook()
+            worksheet = workbook.active
+            worksheet.append(
+                [
+                    "activity_name",
+                    "category",
+                    "region",
+                    "unit_activity",
+                    "default_factor_kgco2e_per_unit",
+                    "default_source_name",
+                    "default_source_url",
+                    "default_source_year",
+                    "custom_factor_kgco2e_per_unit",
+                    "custom_source_name",
+                    "custom_source_url",
+                    "custom_source_year",
+                ]
+            )
+            worksheet.append(
+                [
+                    "Petrol Car",
+                    "petrol_car_km",
+                    "IN",
+                    "km",
+                    "0.21",
+                    "Default source",
+                    "https://example.org/default",
+                    "2024",
+                    "0.5",
+                    "Custom source",
+                    "https://example.org/custom",
+                    "2026",
+                ]
+            )
+            workbook.save(workbook_path)
+            workbook.close()
+
+            original_path = os.environ.get("EMISSION_FACTOR_SHEET_PATH")
+            os.environ["EMISSION_FACTOR_SHEET_PATH"] = str(workbook_path)
+            try:
+                result = calculate_emissions(
+                    self.db,
+                    survey_answers={
+                        "activities": [{"category": "petrol_car_km", "value": 100, "unit": "km"}]
+                    },
+                    survey_region="IN",
+                    as_of=date(2025, 1, 1),
+                )
+            finally:
+                if original_path is None:
+                    os.environ.pop("EMISSION_FACTOR_SHEET_PATH", None)
+                else:
+                    os.environ["EMISSION_FACTOR_SHEET_PATH"] = original_path
+
+        self.assertEqual(result["total_kgco2e"], Decimal("50.0000"))
+        self.assertEqual(
+            result["lines"][0]["formula_string"],
+            "100 km × 0.5 kgCO2e/km = 50 kgCO2e",
+        )
 
 
 if __name__ == "__main__":

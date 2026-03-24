@@ -23,6 +23,7 @@ from .schemas import (
     CarbonIndexResult,
     DashboardResponse,
     EmissionCalculationResult,
+    EmissionFactorCurrentOut,
     EmissionFactorOut,
     FactOut,
     MethodologyVersionOut,
@@ -32,12 +33,14 @@ from .schemas import (
     SurveyOut,
 )
 from .services.calculation_engine import CalculationEngineError, calculate_emissions
+from .services.calculation_engine import resolve_emission_factor
 from .services.carbon_index import (
     CarbonIndexError,
     calculate_carbon_index,
     calculate_carbon_index_for_survey,
     get_benchmarks_for_index,
 )
+from .services.emission_factor_sheet import EmissionFactorSheetError, load_factor_sheet_rows
 from .services.facts import FactsError, load_fact_templates, render_fact_templates
 
 app = FastAPI(title="Carbon Calculator API", version="0.3.0")
@@ -394,6 +397,55 @@ def list_benchmarks_v1(
     db: Session = Depends(get_db),
 ) -> list[BenchmarkStat]:
     return _query_benchmarks(db, metric=metric, region=region, year=year)
+
+
+@app.get("/v1/emission-factors/current", response_model=list[EmissionFactorCurrentOut])
+def list_current_emission_factors_v1(
+    as_of: date | None = Query(default=None),
+    db: Session = Depends(get_db),
+) -> list[EmissionFactorCurrentOut]:
+    effective_date = as_of or date.today()
+    try:
+        sheet_rows = load_factor_sheet_rows()
+    except EmissionFactorSheetError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    results: list[EmissionFactorCurrentOut] = []
+
+    for row in sheet_rows:
+        resolved = resolve_emission_factor(
+            db,
+            category=row.category,
+            activity_unit=row.unit_activity,
+            region=row.region,
+            as_of=effective_date,
+            sheet_rows=sheet_rows,
+        )
+        if resolved is None:
+            continue
+
+        results.append(
+            EmissionFactorCurrentOut(
+                activity_name=row.activity_name,
+                category=row.category,
+                region=row.region,
+                unit_activity=row.unit_activity,
+                effective_factor_kgco2e_per_unit=resolved.factor_kgco2e_per_unit,
+                effective_source_name=resolved.source_name,
+                effective_source_url=resolved.source_url,
+                effective_source_year=resolved.source_year,
+                uses_custom_override=resolved.is_custom_override,
+                default_factor_kgco2e_per_unit=row.default_factor_kgco2e_per_unit,
+                default_source_name=row.default_source_name,
+                default_source_url=row.default_source_url,
+                default_source_year=row.default_source_year,
+                custom_factor_kgco2e_per_unit=row.custom_factor_kgco2e_per_unit,
+                custom_source_name=row.custom_source_name,
+                custom_source_url=row.custom_source_url,
+                custom_source_year=row.custom_source_year,
+            )
+        )
+
+    return sorted(results, key=lambda item: (item.activity_name.lower(), item.region, item.category))
 
 
 @app.get("/v1/methodology", response_model=list[MethodologyVersionOut])

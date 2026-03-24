@@ -27,7 +27,6 @@ const CATEGORY_PRESETS: CategoryPreset[] = [
   { category: "bus_km", label: "Bus", units: ["km"] },
   { category: "metro_km", label: "Metro", units: ["km"] },
   { category: "rail_km", label: "Rail", units: ["km"] },
-  { category: "ride_hailing_km", label: "Ride-hailing", units: ["km"] },
   { category: "flight_shorthaul", label: "Short-haul Flight", units: ["passenger_km"] },
   { category: "diet_plant_based_day", label: "Diet: Plant-based Days", units: ["person_day"] },
   { category: "diet_mixed_day", label: "Diet: Mixed Days", units: ["person_day"] },

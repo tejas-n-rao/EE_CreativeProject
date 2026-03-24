@@ -1,61 +1,41 @@
 [
   {
-    "category": "electricity",
-    "region": "IN",
-    "unit_activity": "kWh",
-    "factor_kgco2e_per_unit": 0.7,
-    "valid_from": "2025-01-01",
-    "valid_to": null,
-    "source_name": "Placeholder electricity factor (i2SEA-inspired)",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-    "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "category": "water_supply_m3",
-    "region": "WORLD",
-    "unit_activity": "m3",
-    "factor_kgco2e_per_unit": 0.344,
-    "valid_from": "2025-01-01",
-    "valid_to": null,
-    "source_name": "Placeholder water treatment factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-    "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "category": "petrol_car_km",
+    "category": "bus_km",
     "region": "WORLD",
     "unit_activity": "km",
-    "factor_kgco2e_per_unit": 0.192,
+    "factor_kgco2e_per_unit": 0.097,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder passenger vehicle factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_name": "Our World in Data",
+    "source_url": "https://ourworldindata.org/travel-carbon-footprint",
     "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Our World in Data",
+        "url": "https://ourworldindata.org/travel-carbon-footprint",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "category": "lpg_kg",
+    "region": "IN",
+    "unit_activity": "kg",
+    "factor_kgco2e_per_unit": 2.99,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Custom",
+    "source_url": "https://wgbis.ces.iisc.ac.in/energy/paper/GHG_footprint/RSER_bharath2015.pdf",
+    "source_year": 2025,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
+    "citations": [
+      {
+        "title": "Custom",
+        "url": "https://wgbis.ces.iisc.ac.in/energy/paper/GHG_footprint/RSER_bharath2015.pdf",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
@@ -66,156 +46,56 @@
     "factor_kgco2e_per_unit": 0.171,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder diesel vehicle factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_name": "Our World in Data",
+    "source_url": "https://ourworldindata.org/travel-carbon-footprint",
     "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Our World in Data",
+        "url": "https://ourworldindata.org/travel-carbon-footprint",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "category": "bus_km",
+    "category": "diet_meat_heavy_day",
     "region": "WORLD",
-    "unit_activity": "km",
-    "factor_kgco2e_per_unit": 0.089,
+    "unit_activity": "person_day",
+    "factor_kgco2e_per_unit": 4.85,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder bus transit factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_name": "Custom",
+    "source_url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
     "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Custom",
+        "url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "category": "metro_km",
+    "category": "diet_mixed_day",
     "region": "WORLD",
-    "unit_activity": "km",
-    "factor_kgco2e_per_unit": 0.041,
+    "unit_activity": "person_day",
+    "factor_kgco2e_per_unit": 2.75,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder metro transit factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_name": "Custom",
+    "source_url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
     "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "category": "rail_km",
-    "region": "WORLD",
-    "unit_activity": "km",
-    "factor_kgco2e_per_unit": 0.035,
-    "valid_from": "2025-01-01",
-    "valid_to": null,
-    "source_name": "Placeholder rail transit factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-    "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "category": "two_wheeler_km",
-    "region": "WORLD",
-    "unit_activity": "km",
-    "factor_kgco2e_per_unit": 0.072,
-    "valid_from": "2025-01-01",
-    "valid_to": null,
-    "source_name": "Placeholder two-wheeler factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-    "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "category": "ride_hailing_km",
-    "region": "WORLD",
-    "unit_activity": "km",
-    "factor_kgco2e_per_unit": 0.18,
-    "valid_from": "2025-01-01",
-    "valid_to": null,
-    "source_name": "Placeholder ride-hailing factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-    "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "category": "flight_shorthaul",
-    "region": "WORLD",
-    "unit_activity": "passenger_km",
-    "factor_kgco2e_per_unit": 0.158,
-    "valid_from": "2025-01-01",
-    "valid_to": null,
-    "source_name": "Placeholder short-haul flight factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-    "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "category": "lpg_kg",
-    "region": "WORLD",
-    "unit_activity": "kg",
-    "factor_kgco2e_per_unit": 2.983,
-    "valid_from": "2025-01-01",
-    "valid_to": null,
-    "source_name": "Placeholder LPG factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-    "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Custom",
+        "url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
@@ -226,57 +106,151 @@
     "factor_kgco2e_per_unit": 1.8,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder low-carbon diet factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_name": "Custom",
+    "source_url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
     "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Custom",
+        "url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "category": "diet_mixed_day",
-    "region": "WORLD",
-    "unit_activity": "person_day",
-    "factor_kgco2e_per_unit": 2.8,
+    "category": "electricity",
+    "region": "IN",
+    "unit_activity": "kWh",
+    "factor_kgco2e_per_unit": 0.757,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder mixed diet factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_name": "CEA",
+    "source_url": "https://www.climatiq.io/data/emission-factor/34488b8a-0e4a-47e1-a309-8a15d3cf5f35?utm_source=chatgpt.com",
     "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "CEA",
+        "url": "https://www.climatiq.io/data/emission-factor/34488b8a-0e4a-47e1-a309-8a15d3cf5f35?utm_source=chatgpt.com",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "category": "diet_meat_heavy_day",
+    "category": "metro_km",
     "region": "WORLD",
-    "unit_activity": "person_day",
-    "factor_kgco2e_per_unit": 4.2,
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.041,
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "source_name": "Placeholder high-meat diet factor",
-    "source_url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
+    "source_name": "Custom",
+    "source_url": "https://www.researchgate.net/publication/300425890_Energy_use_and_carbon_dioxide_emissions_assessment_in_the_lifecycle_of_passenger_rail_systems_The_case_of_the_Rio_de_Janeiro_Metro",
     "source_year": 2025,
-    "license_notes": "Placeholder data for development only.",
-    "is_placeholder": true,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Custom",
+        "url": "https://www.researchgate.net/publication/300425890_Energy_use_and_carbon_dioxide_emissions_assessment_in_the_lifecycle_of_passenger_rail_systems_The_case_of_the_Rio_de_Janeiro_Metro",
+        "accessed_on": "2026-03-24"
       }
     ]
+  },
+  {
+    "category": "petrol_car_km",
+    "region": "WORLD",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.171,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "Our World in Data, India GHGP",
+    "source_url": "https://ourworldindata.org/travel-carbon-footprint",
+    "source_year": 2025,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
+    "citations": [
+      {
+        "title": "Our World in Data, India GHGP",
+        "url": "https://ourworldindata.org/travel-carbon-footprint",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "category": "rail_km",
+    "region": "IN",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.035,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "India GHGP",
+    "source_url": "https://indiaghgp.org",
+    "source_year": 2025,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
+    "citations": [
+      {
+        "title": "India GHGP",
+        "url": "https://indiaghgp.org",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "category": "flight_shorthaul",
+    "region": "IN",
+    "unit_activity": "passenger_km",
+    "factor_kgco2e_per_unit": 0.121,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "India GHGP",
+    "source_url": "https://indiaghgp.org",
+    "source_year": 2014,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
+    "citations": [
+      {
+        "title": "India GHGP",
+        "url": "https://indiaghgp.org",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "category": "two_wheeler_km",
+    "region": "IN",
+    "unit_activity": "km",
+    "factor_kgco2e_per_unit": 0.035,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "India GHGP",
+    "source_url": "https://www.researchgate.net/publication/343818309_India_Specific_Road_Transport_Emission_Factors",
+    "source_year": 2025,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
+    "citations": [
+      {
+        "title": "India GHGP",
+        "url": "https://www.researchgate.net/publication/343818309_India_Specific_Road_Transport_Emission_Factors",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "category": "water_supply_m3",
+    "region": "WORLD",
+    "unit_activity": "m3",
+    "factor_kgco2e_per_unit": 0.344,
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+    "source_name": "UK Environment Agency",
+    "source_url": "",
+    "source_year": 2025,
+    "license_notes": "Source-backed estimate synced from data/emission_factors.xlsx.",
+    "is_placeholder": false,
+    "citations": []
   }
 ]

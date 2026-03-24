@@ -25,6 +25,26 @@ class EmissionFactorOut(BaseModel):
     created_at: datetime
 
 
+class EmissionFactorCurrentOut(BaseModel):
+    activity_name: str
+    category: str
+    region: str
+    unit_activity: str
+    effective_factor_kgco2e_per_unit: Decimal
+    effective_source_name: str
+    effective_source_url: str
+    effective_source_year: int | None
+    uses_custom_override: bool
+    default_factor_kgco2e_per_unit: Decimal
+    default_source_name: str
+    default_source_url: str
+    default_source_year: int | None
+    custom_factor_kgco2e_per_unit: Decimal | None
+    custom_source_name: str | None
+    custom_source_url: str | None
+    custom_source_year: int | None
+
+
 class SurveyCreate(BaseModel):
     country: str = Field(min_length=2, max_length=32)
     answers_json: dict

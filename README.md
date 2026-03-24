@@ -44,6 +44,7 @@ It installs required software via Homebrew, configures Docker compose plugin dis
   - PostgreSQL (Docker) / SQLite (tests)
 - Data and shared assets:
   - JSON seed files for emission factors, benchmarks, methodology versions, facts
+  - Editable Excel override file for emission factors (`data/emission_factors.xlsx`)
   - Shared TypeScript types + JSON schemas in `packages/shared`
 - Tooling:
   - npm workspaces
@@ -247,7 +248,7 @@ pip install -r apps/api/requirements.txt
 - Accessible survey converts weekly lifestyle travel into monthly activity using `weekly × 4.345`.
 - Accessible survey converts annual flights to monthly activity using `annual ÷ 12`.
 - Accessible survey replaces abstract low/medium/high profiles with concrete prompts (household size, AC hours/day, showers/week, laundry loads/week, and home-cooked meals/week).
-- Monthly survey supports expanded transport and livelihood categories (bus, metro, rail, two-wheeler, ride-hailing, LPG, diet profiles).
+- Monthly survey supports expanded transport and livelihood categories (bus, metro, rail, two-wheeler, LPG, diet profiles).
 - Dashboard includes class-level annual benchmark comparison for transportation, food, and water consumption (User vs India vs World).
 
 ### Detailed Calculation Methodology (With Sources)
@@ -269,12 +270,16 @@ pip install -r apps/api/requirements.txt
      - `apps/web/app/survey/SurveyForm.tsx`
 
 2. Emission factor lookup
-   - API matches each activity by `(category, unit_activity, region, valid date)`.
+   - API first checks `data/emission_factors.xlsx` for a custom override row.
+   - If no custom override exists, API matches each activity by `(category, unit_activity, region, valid date)` in DB.
    - If no region-specific factor exists, API falls back to `WORLD`.
    - Source implementation:
      - `apps/api/app/services/calculation_engine.py`
+     - `apps/api/app/services/emission_factor_sheet.py`
    - Seeded factor dataset:
-     - `data/db_emission_factors.json` (placeholder factors)
+     - `data/db_emission_factors.json` (source-backed factors synced from sheet)
+   - Editable override sheet:
+     - `data/emission_factors.xlsx` (custom factor/source columns)
 
 3. Emissions per category and total
    - Per-category monthly emissions:
@@ -305,28 +310,35 @@ pip install -r apps/api/requirements.txt
    - Template seed dataset:
      - `data/fact_templates.json`
 
-### Activity Emission Factor Reference (Seed Data)
+### Activity Emission Factor Reference (Current + Overrides)
 
-The table below is the current activity-factor reference used by the calculator seed data.
+The calculator reads defaults and optional custom overrides from `data/emission_factors.xlsx`.
+Edit these columns per row to override calculations and methodology sources live:
+
+- `custom_factor_kgco2e_per_unit`
+- `custom_source_name`
+- `custom_source_url`
+- `custom_source_year`
+
+Leave custom columns blank to use the standard seeded values.
 
 | Activity | Category key | Unit | Factor (kgCO2e/unit) | Region | Source |
 | --- | --- | --- | ---: | --- | --- |
-| Electricity | `electricity` | `kWh` | 0.700 | IN | i2SEA calculator reference |
-| Water Supply | `water_supply_m3` | `m3` | 0.344 | WORLD | i2SEA calculator reference |
-| Petrol Car | `petrol_car_km` | `km` | 0.192 | WORLD | i2SEA calculator reference |
-| Diesel Car | `diesel_car_km` | `km` | 0.171 | WORLD | i2SEA calculator reference |
-| Bus | `bus_km` | `km` | 0.089 | WORLD | i2SEA calculator reference |
-| Metro | `metro_km` | `km` | 0.041 | WORLD | i2SEA calculator reference |
-| Rail | `rail_km` | `km` | 0.035 | WORLD | i2SEA calculator reference |
-| Two-wheeler | `two_wheeler_km` | `km` | 0.072 | WORLD | i2SEA calculator reference |
-| Ride-hailing | `ride_hailing_km` | `km` | 0.180 | WORLD | i2SEA calculator reference |
-| Short-haul flight | `flight_shorthaul` | `passenger_km` | 0.158 | WORLD | i2SEA calculator reference |
-| Cooking Gas (LPG) | `lpg_kg` | `kg` | 2.983 | WORLD | i2SEA calculator reference |
-| Diet (Plant-based) | `diet_plant_based_day` | `person_day` | 1.800 | WORLD | i2SEA calculator reference |
-| Diet (Mixed) | `diet_mixed_day` | `person_day` | 2.800 | WORLD | i2SEA calculator reference |
-| Diet (Meat-heavy) | `diet_meat_heavy_day` | `person_day` | 4.200 | WORLD | i2SEA calculator reference |
+| Electricity | `electricity` | `kWh` | 0.757 | IN | CEA |
+| Water Supply | `water_supply_m3` | `m3` | 0.344 | WORLD | UK Environment Agency |
+| Petrol Car | `petrol_car_km` | `km` | 0.171 | WORLD | Our World in Data, India GHGP |
+| Diesel Car | `diesel_car_km` | `km` | 0.171 | WORLD | Our World in Data |
+| Bus | `bus_km` | `km` | 0.097 | WORLD | Our World in Data |
+| Metro | `metro_km` | `km` | 0.041 | WORLD | Custom |
+| Rail | `rail_km` | `km` | 0.035 | IN | India GHGP |
+| Two-wheeler | `two_wheeler_km` | `km` | 0.035 | IN | India GHGP |
+| Short-haul flight | `flight_shorthaul` | `passenger_km` | 0.121 | IN | India GHGP |
+| Cooking Gas (LPG) | `lpg_kg` | `kg` | 2.990 | IN | Custom |
+| Diet (Plant-based) | `diet_plant_based_day` | `person_day` | 1.800 | WORLD | Custom |
+| Diet (Mixed) | `diet_mixed_day` | `person_day` | 2.750 | WORLD | Custom |
+| Diet (Meat-heavy) | `diet_meat_heavy_day` | `person_day` | 4.850 | WORLD | Custom |
 
-Source link used in seeded factors: `https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full`
+Source links are stored per-row in `data/emission_factors.xlsx` and synced into `data/db_emission_factors.json`.
 
 ### Benchmark Sources (Verified 2026-03-06)
 
@@ -349,6 +361,7 @@ Source link used in seeded factors: `https://depts.washington.edu/i2sea/iscfc/fp
 - `GET /v1/surveys/{id}/dashboard`
 - `GET /v1/benchmarks`
 - `GET /v1/methodology`
+- `GET /v1/emission-factors/current`
 - `GET /v1/facts`
 
 ## Shared Types And Schemas
@@ -367,6 +380,7 @@ Source link used in seeded factors: `https://depts.washington.edu/i2sea/iscfc/fp
 - `data/db_emission_factors.json`
 - `data/db_methodology_versions.json`
 - `data/db_benchmark_stats.json`
+- `data/emission_factors.xlsx`
 
 All seed datasets are placeholders (non-proprietary) and should be replaced with validated public data before production use.
 

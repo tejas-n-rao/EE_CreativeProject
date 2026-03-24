@@ -48,6 +48,9 @@ function fallbackFacts(): FunFactTemplate[] {
       livelihood_link: "Efficient cooling lowers bills while keeping workers productive in hotter hours.",
       action_prompt: "Try one efficiency switch each month: AC setpoint, fan pairing, or insulation.",
       tag: "home-energy",
+      source_title: "IEA - The Future of Cooling",
+      source_url: "https://www.iea.org/reports/the-future-of-cooling/",
+      source_accessed_on: "2026-03-17",
     },
     {
       id: "2",
@@ -57,6 +60,9 @@ function fallbackFacts(): FunFactTemplate[] {
       livelihood_link: "Lower monthly commute spend can free budget for education, health, or savings.",
       action_prompt: "Test one mixed-mode week and compare cost + travel time.",
       tag: "transport",
+      source_title: "IEA - Energy Efficiency Policy Toolkit 2025: Transport",
+      source_url: "https://www.iea.org/reports/energy-efficiency-policy-toolkit-2025/transport",
+      source_accessed_on: "2026-03-17",
     },
     {
       id: "3",
@@ -67,6 +73,10 @@ function fallbackFacts(): FunFactTemplate[] {
         "Better meal planning can reduce waste, smooth food expenses, and improve nutrition stability.",
       action_prompt: "Track home-cooked meals for two weeks to estimate your baseline.",
       tag: "livelihood",
+      source_title: "UNEP - Food loss and waste",
+      source_url:
+        "https://www.unep.org/topics/chemicals-and-pollution-action/circularity-sectors/food-and-food-waste",
+      source_accessed_on: "2026-03-17",
     },
   ];
 }
@@ -102,6 +112,9 @@ async function loadTemplateFacts(): Promise<FunFactTemplate[]> {
           livelihood_link: cells[keyIndex.get("livelihood_link") ?? -1] || "",
           action_prompt: cells[keyIndex.get("action_prompt") ?? -1] || "",
           tag: cells[keyIndex.get("tag") ?? -1] || "",
+          source_title: cells[keyIndex.get("source_title") ?? -1] || "",
+          source_url: cells[keyIndex.get("source_url") ?? -1] || "",
+          source_accessed_on: cells[keyIndex.get("source_accessed_on") ?? -1] || "",
         } satisfies FunFactTemplate;
       })
       .filter((fact) => fact.id && fact.title && fact.climate_fact);

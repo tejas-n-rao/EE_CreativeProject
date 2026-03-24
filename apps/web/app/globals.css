@@ -1,40 +1,40 @@
 :root {
   --font-body: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
-  --font-display: "Gill Sans", "Avenir Next", "IBM Plex Sans", sans-serif;
-  --color-text: #13273d;
-  --color-muted: #385473;
-  --color-bg: #f6f8fc;
-  --color-bg-soft: #eef3fa;
-  --color-panel: rgba(255, 255, 255, 0.82);
-  --color-panel-solid: #ffffff;
-  --color-border: #cbd9e7;
-  --color-border-strong: #b2c6dc;
-  --color-hero-start: #dff5ea;
-  --color-hero-mid: #f6fbff;
-  --color-hero-end: #e6f0ff;
-  --color-accent: #0d5f9d;
-  --color-accent-strong: #0b4f88;
-  --color-accent-soft: #e8f2ff;
-  --color-accent-soft-border: #b7cde3;
+  --font-display: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
+  --color-text: #193025;
+  --color-muted: #426552;
+  --color-bg: #f2faf3;
+  --color-bg-soft: #e6f3e9;
+  --color-panel: rgba(248, 255, 249, 0.86);
+  --color-panel-solid: #f8fff8;
+  --color-border: #bdd8c4;
+  --color-border-strong: #a4c9af;
+  --color-hero-start: #d9f1df;
+  --color-hero-mid: #edf8ef;
+  --color-hero-end: #d9ebdd;
+  --color-accent: #2f8a57;
+  --color-accent-strong: #245f3d;
+  --color-accent-soft: #e1f2e5;
+  --color-accent-soft-border: #97bda3;
   --color-danger-bg: #ffeceb;
   --color-danger-border: #efc1be;
   --color-danger-text: #8f251f;
   --color-warning-bg: #fff4e8;
   --color-warning-border: #f0c8a8;
   --color-warning-text: #8a3c00;
-  --color-chart-track: #eff4fb;
-  --color-tooltip-bg: #102d47;
-  --color-tooltip-text: #eff7ff;
-  --color-focus: #a9d2ff;
+  --color-chart-track: #e8f2ea;
+  --color-tooltip-bg: #183b28;
+  --color-tooltip-text: #e9ffef;
+  --color-focus: #7fcf9b;
   --gloss-highlight: rgba(255, 255, 255, 0.58);
-  --shadow-soft: 0 12px 28px rgba(20, 40, 64, 0.08);
-  --shadow-panel: 0 18px 36px rgba(19, 39, 61, 0.09);
-  --gradient-page: radial-gradient(circle at 2% 0%, #f9fbff 0%, #edf3fb 46%, #e5edf9 100%);
+  --shadow-soft: 0 12px 28px rgba(18, 43, 30, 0.08);
+  --shadow-panel: 0 18px 36px rgba(20, 52, 33, 0.09);
+  --gradient-page: radial-gradient(circle at 2% 0%, #f9fff9 0%, #edf7ef 46%, #e4f0e7 100%);
 }
 
 html[data-theme="dark"] {
   --font-body: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
-  --font-display: "Gill Sans", "Avenir Next", "IBM Plex Sans", sans-serif;
+  --font-display: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
   --color-text: #d8f6df;
   --color-muted: #8cb49a;
   --color-bg: #050a07;
@@ -272,6 +272,14 @@ h1 {
 .sweep-controls {
   display: flex;
   gap: 0.45rem;
+  align-items: center;
+}
+
+.sweep-controls span {
+  min-width: 3rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--color-muted);
 }
 
 .sweep-pane-content {
@@ -341,6 +349,18 @@ html[data-theme="dark"] .sweep-pane-content-animated::after {
   text-transform: uppercase;
   font-weight: 700;
   color: var(--color-accent-strong);
+}
+
+.fact-source {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.fact-source a {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .flashcard-grid {
@@ -518,6 +538,19 @@ html[data-theme="dark"] .sweep-pane-content-animated::after {
 
 .methodology-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+.methodology-markdown {
+  margin: 0.8rem 0 0;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-panel-solid);
+  white-space: pre-wrap;
+  overflow-x: auto;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 .dashboard-page {

@@ -1,156 +1,178 @@
 [
   {
-    "id": "ef-electricity-india-grid-placeholder",
-    "activity": "electricity",
-    "unit": "kWh",
-    "factor_kg_co2e_per_unit": 0.7,
+    "id": "ef-bus-km-world",
+    "activity": "bus_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.097,
+    "region": "WORLD",
+    "citations": [
+      {
+        "title": "Our World in Data",
+        "url": "https://ourworldindata.org/travel-carbon-footprint",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "id": "ef-lpg-kg-in",
+    "activity": "lpg_kg",
+    "unit": "kg",
+    "factor_kg_co2e_per_unit": 2.99,
     "region": "IN",
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Custom",
+        "url": "https://wgbis.ces.iisc.ac.in/energy/paper/GHG_footprint/RSER_bharath2015.pdf",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "id": "ef-water-supply-placeholder",
-    "activity": "water_supply_m3",
-    "unit": "m3",
-    "factor_kg_co2e_per_unit": 0.344,
-    "region": "Global",
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "id": "ef-petrol-car-km-placeholder",
-    "activity": "petrol_car_km",
+    "id": "ef-diesel-car-km-world",
+    "activity": "diesel_car_km",
     "unit": "km",
-    "factor_kg_co2e_per_unit": 0.192,
-    "region": "Global",
+    "factor_kg_co2e_per_unit": 0.171,
+    "region": "WORLD",
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Our World in Data",
+        "url": "https://ourworldindata.org/travel-carbon-footprint",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "id": "ef-bus-km-placeholder",
-    "activity": "bus_km",
-    "unit": "km",
-    "factor_kg_co2e_per_unit": 0.089,
-    "region": "Global",
+    "id": "ef-diet-meat-heavy-day-world",
+    "activity": "diet_meat_heavy_day",
+    "unit": "person_day",
+    "factor_kg_co2e_per_unit": 4.85,
+    "region": "WORLD",
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Custom",
+        "url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "id": "ef-metro-km-placeholder",
+    "id": "ef-diet-mixed-day-world",
+    "activity": "diet_mixed_day",
+    "unit": "person_day",
+    "factor_kg_co2e_per_unit": 2.75,
+    "region": "WORLD",
+    "citations": [
+      {
+        "title": "Custom",
+        "url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "id": "ef-diet-plant-based-day-world",
+    "activity": "diet_plant_based_day",
+    "unit": "person_day",
+    "factor_kg_co2e_per_unit": 1.8,
+    "region": "WORLD",
+    "citations": [
+      {
+        "title": "Custom",
+        "url": "https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "id": "ef-electricity-in",
+    "activity": "electricity",
+    "unit": "kWh",
+    "factor_kg_co2e_per_unit": 0.757,
+    "region": "IN",
+    "citations": [
+      {
+        "title": "CEA",
+        "url": "https://www.climatiq.io/data/emission-factor/34488b8a-0e4a-47e1-a309-8a15d3cf5f35?utm_source=chatgpt.com",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "id": "ef-metro-km-world",
     "activity": "metro_km",
     "unit": "km",
     "factor_kg_co2e_per_unit": 0.041,
-    "region": "Global",
+    "region": "WORLD",
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "Custom",
+        "url": "https://www.researchgate.net/publication/300425890_Energy_use_and_carbon_dioxide_emissions_assessment_in_the_lifecycle_of_passenger_rail_systems_The_case_of_the_Rio_de_Janeiro_Metro",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "id": "ef-rail-km-placeholder",
+    "id": "ef-petrol-car-km-world",
+    "activity": "petrol_car_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.171,
+    "region": "WORLD",
+    "citations": [
+      {
+        "title": "Our World in Data, India GHGP",
+        "url": "https://ourworldindata.org/travel-carbon-footprint",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  },
+  {
+    "id": "ef-rail-km-in",
     "activity": "rail_km",
     "unit": "km",
     "factor_kg_co2e_per_unit": 0.035,
-    "region": "Global",
+    "region": "IN",
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "India GHGP",
+        "url": "https://indiaghgp.org",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "id": "ef-two-wheeler-km-placeholder",
-    "activity": "two_wheeler_km",
-    "unit": "km",
-    "factor_kg_co2e_per_unit": 0.072,
-    "region": "Global",
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "id": "ef-ride-hailing-km-placeholder",
-    "activity": "ride_hailing_km",
-    "unit": "km",
-    "factor_kg_co2e_per_unit": 0.18,
-    "region": "Global",
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
-  },
-  {
-    "id": "ef-flight-shorthaul-placeholder",
+    "id": "ef-flight-shorthaul-in",
     "activity": "flight_shorthaul",
     "unit": "passenger_km",
-    "factor_kg_co2e_per_unit": 0.158,
-    "region": "Global",
+    "factor_kg_co2e_per_unit": 0.121,
+    "region": "IN",
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "India GHGP",
+        "url": "https://indiaghgp.org",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "id": "ef-lpg-kg-placeholder",
-    "activity": "lpg_kg",
-    "unit": "kg",
-    "factor_kg_co2e_per_unit": 2.983,
-    "region": "Global",
+    "id": "ef-two-wheeler-km-in",
+    "activity": "two_wheeler_km",
+    "unit": "km",
+    "factor_kg_co2e_per_unit": 0.035,
+    "region": "IN",
     "citations": [
       {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
+        "title": "India GHGP",
+        "url": "https://www.researchgate.net/publication/343818309_India_Specific_Road_Transport_Emission_Factors",
+        "accessed_on": "2026-03-24"
       }
     ]
   },
   {
-    "id": "ef-diet-mixed-day-placeholder",
-    "activity": "diet_mixed_day",
-    "unit": "person_day",
-    "factor_kg_co2e_per_unit": 2.8,
-    "region": "Global",
-    "citations": [
-      {
-        "title": "i2SEA calculator reference",
-        "url": "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-        "accessed_on": "2026-03-06"
-      }
-    ]
+    "id": "ef-water-supply-m3-world",
+    "activity": "water_supply_m3",
+    "unit": "m3",
+    "factor_kg_co2e_per_unit": 0.344,
+    "region": "WORLD",
+    "citations": []
   }
 ]

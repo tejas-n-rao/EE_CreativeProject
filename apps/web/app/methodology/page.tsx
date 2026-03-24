@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 type MethodologyItem = {
   id?: string;
@@ -16,6 +18,26 @@ type EmissionFactorSource = {
   url: string;
 };
 
+type EffectiveEmissionFactor = {
+  activity_name: string;
+  category: string;
+  region: string;
+  unit_activity: string;
+  effective_factor_kgco2e_per_unit: number | string;
+  effective_source_name: string;
+  effective_source_url: string;
+  effective_source_year?: number | null;
+  uses_custom_override: boolean;
+  default_factor_kgco2e_per_unit: number | string;
+  default_source_name: string;
+  default_source_url: string;
+  default_source_year?: number | null;
+  custom_factor_kgco2e_per_unit?: number | string | null;
+  custom_source_name?: string | null;
+  custom_source_url?: string | null;
+  custom_source_year?: number | null;
+};
+
 type MethodologyApiPayload =
   | MethodologyItem[]
   | {
@@ -30,171 +52,26 @@ type MethodologyApiPayload =
 
 const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const FALLBACK_EQUATION = "Emissions = Activity Data × Emission Factor";
-const BENCHMARK_CITATIONS = [
-  {
-    label: "OWID per-capita GHG emissions (including land-use change)",
-    url: "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
-  },
-  {
-    label: "OWID transport CO2 emissions per capita",
-    url: "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
-  },
-  {
-    label: "OWID emissions from food",
-    url: "https://ourworldindata.org/grapher/emissions-from-food.csv",
-  },
-  {
-    label: "World Bank population (SP.POP.TOTL)",
-    url: "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
-  },
-  {
-    label: "World Bank total freshwater withdrawals (ER.H2O.FWTL.K3)",
-    url: "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
-  },
-  {
-    label: "World Bank domestic freshwater withdrawal share (ER.H2O.FWDM.ZS)",
-    url: "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWDM.ZS?format=json&per_page=400",
-  },
-];
+async function loadCustomEstimationMarkdown(): Promise<string | null> {
+  const candidates = ["Custom_Estimation.md", "Custome_Estimation.md"];
+  const roots = [
+    process.cwd(),
+    path.resolve(process.cwd(), ".."),
+    path.resolve(process.cwd(), "..", ".."),
+  ];
 
-type ActivityFactorRow = {
-  category: string;
-  activity: string;
-  unit: string;
-  factor: string;
-  region: string;
-  source_name: string;
-  source_url: string;
-};
-
-const ACTIVITY_FACTOR_ROWS: ActivityFactorRow[] = [
-  {
-    category: "electricity",
-    activity: "Electricity",
-    unit: "kWh",
-    factor: "0.700",
-    region: "IN",
-    source_name: "Placeholder electricity factor (i2SEA-inspired)",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "water_supply_m3",
-    activity: "Water Supply",
-    unit: "m3",
-    factor: "0.344",
-    region: "WORLD",
-    source_name: "Placeholder water treatment factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "petrol_car_km",
-    activity: "Petrol Car",
-    unit: "km",
-    factor: "0.192",
-    region: "WORLD",
-    source_name: "Placeholder passenger vehicle factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "diesel_car_km",
-    activity: "Diesel Car",
-    unit: "km",
-    factor: "0.171",
-    region: "WORLD",
-    source_name: "Placeholder diesel vehicle factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "bus_km",
-    activity: "Bus",
-    unit: "km",
-    factor: "0.089",
-    region: "WORLD",
-    source_name: "Placeholder bus transit factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "metro_km",
-    activity: "Metro",
-    unit: "km",
-    factor: "0.041",
-    region: "WORLD",
-    source_name: "Placeholder metro transit factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "rail_km",
-    activity: "Rail",
-    unit: "km",
-    factor: "0.035",
-    region: "WORLD",
-    source_name: "Placeholder rail transit factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "two_wheeler_km",
-    activity: "Two-wheeler",
-    unit: "km",
-    factor: "0.072",
-    region: "WORLD",
-    source_name: "Placeholder two-wheeler factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "ride_hailing_km",
-    activity: "Ride-hailing",
-    unit: "km",
-    factor: "0.180",
-    region: "WORLD",
-    source_name: "Placeholder ride-hailing factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "flight_shorthaul",
-    activity: "Short-haul flight",
-    unit: "passenger_km",
-    factor: "0.158",
-    region: "WORLD",
-    source_name: "Placeholder short-haul flight factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "lpg_kg",
-    activity: "Cooking Gas (LPG)",
-    unit: "kg",
-    factor: "2.983",
-    region: "WORLD",
-    source_name: "Placeholder LPG factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "diet_plant_based_day",
-    activity: "Diet (Plant-based)",
-    unit: "person_day",
-    factor: "1.800",
-    region: "WORLD",
-    source_name: "Placeholder low-carbon diet factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "diet_mixed_day",
-    activity: "Diet (Mixed)",
-    unit: "person_day",
-    factor: "2.800",
-    region: "WORLD",
-    source_name: "Placeholder mixed diet factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-  {
-    category: "diet_meat_heavy_day",
-    activity: "Diet (Meat-heavy)",
-    unit: "person_day",
-    factor: "4.200",
-    region: "WORLD",
-    source_name: "Placeholder high-meat diet factor",
-    source_url: "https://depts.washington.edu/i2sea/iscfc/fpcalc.php?version=full",
-  },
-];
+  for (const root of roots) {
+    for (const fileName of candidates) {
+      const fullPath = path.join(root, "data", fileName);
+      try {
+        return await readFile(fullPath, "utf-8");
+      } catch {
+        // Try next candidate filename/location.
+      }
+    }
+  }
+  return null;
+}
 
 function asMethodologyItems(payload: MethodologyApiPayload): MethodologyItem[] {
   if (Array.isArray(payload)) {
@@ -209,6 +86,7 @@ function asMethodologyItems(payload: MethodologyApiPayload): MethodologyItem[] {
 function extractSourceList(
   payload: MethodologyApiPayload,
   items: MethodologyItem[],
+  factors: EffectiveEmissionFactor[],
 ): EmissionFactorSource[] {
   const seen = new Set<string>();
   const sources: EmissionFactorSource[] = [];
@@ -216,17 +94,18 @@ function extractSourceList(
   const addSource = (name?: string, url?: string) => {
     const sourceName = (name || "").trim();
     const sourceUrl = (url || "").trim();
-    if (!sourceName || !sourceUrl) {
+    if (!sourceUrl) {
       return;
     }
+    const displayName = !sourceName || sourceName.toLowerCase() === "custom" ? sourceUrl : sourceName;
 
-    const key = `${sourceName}::${sourceUrl}`;
+    const key = `${displayName}::${sourceUrl}`;
     if (seen.has(key)) {
       return;
     }
 
     seen.add(key);
-    sources.push({ name: sourceName, url: sourceUrl });
+    sources.push({ name: displayName, url: sourceUrl });
   };
 
   if (!Array.isArray(payload)) {
@@ -243,50 +122,81 @@ function extractSourceList(
     }
   }
 
+  for (const factor of factors) {
+    addSource(factor.effective_source_name, factor.effective_source_url);
+  }
+
   return sources;
+}
+
+function formatFactor2dp(value: number | string): string {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return String(value);
+  }
+  return parsed.toFixed(2);
+}
+
+function formatSourceLabel(name: string, fallback = "-"): string {
+  const cleaned = (name || "").trim();
+  if (!cleaned || cleaned.toLowerCase() === "custom") {
+    return fallback;
+  }
+  return cleaned;
 }
 
 async function getMethodologyData(): Promise<{
   equation: string;
   methodology: MethodologyItem[];
+  factors: EffectiveEmissionFactor[];
   sources: EmissionFactorSource[];
   errorMessage: string | null;
 }> {
+  let payload: MethodologyApiPayload = [];
+  let methodology: MethodologyItem[] = [];
+  let factors: EffectiveEmissionFactor[] = [];
+  const errors: string[] = [];
+
   try {
     const response = await fetch(`${apiBase}/v1/methodology`, { cache: "no-store" });
-
     if (!response.ok) {
       const body = await response.json().catch(() => null);
       const detail = typeof body?.detail === "string" ? body.detail : null;
-      return {
-        equation: FALLBACK_EQUATION,
-        methodology: [],
-        sources: [],
-        errorMessage:
-          detail || `Methodology API returned ${response.status}. Check API setup and seed data.`,
-      };
+      errors.push(detail || `Methodology API returned ${response.status}.`);
+    } else {
+      payload = (await response.json()) as MethodologyApiPayload;
+      methodology = asMethodologyItems(payload);
     }
-
-    const payload = (await response.json()) as MethodologyApiPayload;
-    const methodology = asMethodologyItems(payload);
-    const sources = extractSourceList(payload, methodology);
-
-    const equation = methodology[0]?.equation_string || FALLBACK_EQUATION;
-
-    return { equation, methodology, sources, errorMessage: null };
   } catch (error) {
     const reason = error instanceof Error ? error.message : "Unknown fetch error";
-    return {
-      equation: FALLBACK_EQUATION,
-      methodology: [],
-      sources: [],
-      errorMessage: `Could not reach API at ${apiBase}. ${reason}`,
-    };
+    errors.push(`Could not load methodology data. ${reason}`);
   }
+
+  try {
+    const factorResponse = await fetch(`${apiBase}/v1/emission-factors/current`, {
+      cache: "no-store",
+    });
+    if (!factorResponse.ok) {
+      const body = await factorResponse.json().catch(() => null);
+      const detail = typeof body?.detail === "string" ? body.detail : null;
+      errors.push(detail || `Emission factor API returned ${factorResponse.status}.`);
+    } else {
+      factors = (await factorResponse.json()) as EffectiveEmissionFactor[];
+    }
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "Unknown fetch error";
+    errors.push(`Could not load emission factors. ${reason}`);
+  }
+
+  const sources = extractSourceList(payload, methodology, factors);
+  const equation = methodology[0]?.equation_string || FALLBACK_EQUATION;
+  const errorMessage = errors.length > 0 ? errors.join(" ") : null;
+  return { equation, methodology, factors, sources, errorMessage };
 }
 
 export default async function MethodologyPage() {
-  const { equation, methodology, sources, errorMessage } = await getMethodologyData();
+  const { equation, methodology, factors, sources, errorMessage } = await getMethodologyData();
+  const customEstimationMarkdown = await loadCustomEstimationMarkdown();
 
   return (
     <main className="methodology-page">
@@ -349,43 +259,49 @@ export default async function MethodologyPage() {
       <section className="methodology-section">
         <h2>2) Activity Reference Factors (kgCO2e per unit)</h2>
         <p>
-          Current seed factors used by the calculator. These values are placeholders for
-          development and should be replaced with validated regional datasets before production use.
+          These factors are read live from <code>data/emission_factors.xlsx</code>. Edit the
+          custom factor/source columns in that sheet to override the defaults used by calculations.
         </p>
-        <div className="methodology-table-wrap">
-          <table className="methodology-table">
-            <thead>
-              <tr>
-                <th>Activity</th>
-                <th>Category Key</th>
-                <th>Unit</th>
-                <th>Factor (kgCO2e/unit)</th>
-                <th>Region</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ACTIVITY_FACTOR_ROWS.map((row) => (
-                <tr key={`${row.category}-${row.region}-${row.unit}`}>
-                  <td>{row.activity}</td>
-                  <td>
-                    <code>{row.category}</code>
-                  </td>
-                  <td>
-                    <code>{row.unit}</code>
-                  </td>
-                  <td>{row.factor}</td>
-                  <td>{row.region}</td>
-                  <td>
-                    <a href={row.source_url} target="_blank" rel="noreferrer">
-                      {row.source_name}
-                    </a>
-                  </td>
+        {factors.length > 0 ? (
+          <div className="methodology-table-wrap">
+            <table className="methodology-table">
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Unit</th>
+                  <th>Factor (kgCO2e/unit)</th>
+                  <th>Region</th>
+                  <th>Source</th>
+                  <th>Source Link</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {factors.map((row) => (
+                  <tr key={`${row.category}-${row.region}-${row.unit_activity}`}>
+                    <td>{row.activity_name}</td>
+                    <td>
+                      <code>{row.unit_activity}</code>
+                    </td>
+                    <td>{formatFactor2dp(row.effective_factor_kgco2e_per_unit)}</td>
+                    <td>{row.region}</td>
+                    <td>{formatSourceLabel(row.effective_source_name)}</td>
+                    <td>
+                      {row.effective_source_url ? (
+                        <a href={row.effective_source_url} target="_blank" rel="noreferrer">
+                          {row.effective_source_url}
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p>No emission factor rows were returned by the API.</p>
+        )}
       </section>
 
       <section className="methodology-section">
@@ -402,8 +318,8 @@ export default async function MethodologyPage() {
           </ul>
         ) : (
           <p>
-            No emission factor source records were included in the current{" "}
-            <code>/v1/methodology</code> response.
+            No emission factor source records were included in the current API responses (
+            <code>/v1/methodology</code> and <code>/v1/emission-factors/current</code>).
           </p>
         )}
       </section>
@@ -418,17 +334,19 @@ export default async function MethodologyPage() {
       </section>
 
       <section className="methodology-section">
-        <h2>5) Benchmark Citations (from README)</h2>
-        <p>Verified reference links used for benchmark derivations and comparisons.</p>
-        <ul>
-          {BENCHMARK_CITATIONS.map((citation) => (
-            <li key={citation.url}>
-              <a href={citation.url} target="_blank" rel="noreferrer">
-                {citation.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <h2>5) Emission Factor Estimation Notes</h2>
+        <p>
+          The following content is loaded directly from <code>data/Custom_Estimation.md</code>{" "}
+          and used as the methodology reference for deriving and justifying emission-factor
+          estimates.
+        </p>
+        {customEstimationMarkdown ? (
+          <pre className="methodology-markdown">{customEstimationMarkdown}</pre>
+        ) : (
+          <p>
+            Could not load <code>data/Custom_Estimation.md</code>.
+          </p>
+        )}
       </section>
 
       <section className="methodology-section">
@@ -445,6 +363,10 @@ export default async function MethodologyPage() {
           <li>
             <strong>Simplified assumptions:</strong> The model uses simplified inputs and
             direct factors, so real-world lifecycle effects may differ.
+          </li>
+          <li>
+            <strong>Custom EF estimation:</strong> Diet and LPG factors include modeled assumptions
+            from project-specific estimation methods.
           </li>
         </ul>
       </section>
