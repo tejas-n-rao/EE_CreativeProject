@@ -1,0 +1,14 @@
+[
+  {
+    "version_name": "v2-source-backed-activity-factor",
+    "equation_string": "Emissions = Activity × Emission Factor",
+    "description": "Source-backed methodology using direct multiplication of activity data and emission factors synced from data/emission_factors.xlsx, with detailed derivation notes in data/Custom_Estimation.md for diet and LPG factors.",
+    "citations": [
+      {
+        "title": "Custom estimation notes (project data file)",
+        "url": "data/Custom_Estimation.md",
+        "accessed_on": "2026-03-24"
+      }
+    ]
+  }
+]

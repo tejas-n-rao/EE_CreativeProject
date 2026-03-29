@@ -83,6 +83,42 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function normalizeMathText(value: string): string {
+  const subscriptMap: Record<string, string> = {
+    "0": "₀",
+    "1": "₁",
+    "2": "₂",
+    "3": "₃",
+    "4": "₄",
+    "5": "₅",
+    "6": "₆",
+    "7": "₇",
+    "8": "₈",
+    "9": "₉",
+  };
+
+  const toSubscript = (digits: string) =>
+    digits
+      .split("")
+      .map((char) => subscriptMap[char] || char)
+      .join("");
+
+  return value
+    .replace(/\\\[/g, "")
+    .replace(/\\\]/g, "")
+    .replace(/\\\(/g, "")
+    .replace(/\\\)/g, "")
+    .replace(/\\times/g, "×")
+    .replace(/\\cdot/g, "·")
+    .replace(/\\sum/g, "Σ")
+    .replace(/\\text\{([^}]+)\}/g, "$1")
+    .replace(/\\mathrm\{([^}]+)\}/g, "$1")
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1)/($2)")
+    .replace(/_\{(\d+)\}/g, (_, digits: string) => toSubscript(digits))
+    .replace(/_(\d+)/g, (_, digits: string) => toSubscript(digits))
+    .replace(/\{([^{}]+)\}/g, "$1");
+}
+
 function splitTableLine(line: string): string[] {
   const normalized = line.trim().replace(/^\|/, "").replace(/\|$/, "");
   return normalized.split("|").map((cell) => cell.trim());
@@ -107,7 +143,7 @@ function startsTable(lines: string[], index: number): boolean {
 }
 
 function renderInlineMarkdown(text: string): string {
-  let rendered = escapeHtml(text);
+  let rendered = escapeHtml(normalizeMathText(text));
   const linkTokens: string[] = [];
   const codeTokens: string[] = [];
 

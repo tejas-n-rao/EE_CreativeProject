@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fact-electricity-share-template",
+    "template": "Electricity usage contributed {{value}} kgCO2e this period.",
+    "tags": ["electricity", "insight"],
+    "citations": [
+      {
+        "title": "Placeholder insight template reference",
+        "url": "https://example.org/placeholder-insight-template",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "fact-transport-comparison-template",
+    "template": "Transport emissions are {{percent}}% above your benchmark.",
+    "tags": ["transport", "comparison"],
+    "citations": [
+      {
+        "title": "Placeholder comparison template reference",
+        "url": "https://example.org/placeholder-comparison-template",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  }
+]

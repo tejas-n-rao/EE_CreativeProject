@@ -1,0 +1,152 @@
+[
+  {
+    "metric": "annual_per_capita_emissions",
+    "region": "WORLD",
+    "year": 2024,
+    "value_tonnes_per_person": 6.6691,
+    "source_name": "OWID per-capita GHG (including land use)",
+    "source_url": "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
+    "citations": [
+      {
+        "title": "Our World in Data: Per capita greenhouse gas emissions",
+        "url": "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "annual_per_capita_emissions",
+    "region": "IN",
+    "year": 2024,
+    "value_tonnes_per_person": 2.9377,
+    "source_name": "OWID per-capita GHG (including land use)",
+    "source_url": "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
+    "citations": [
+      {
+        "title": "Our World in Data: Per capita greenhouse gas emissions",
+        "url": "https://ourworldindata.org/grapher/per-capita-ghg-emissions.csv",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "transport_per_capita_emissions",
+    "region": "WORLD",
+    "year": 2023,
+    "value_tonnes_per_person": 1.0228,
+    "source_name": "OWID transport CO2 per capita",
+    "source_url": "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
+    "citations": [
+      {
+        "title": "Our World in Data: Per capita carbon dioxide emissions from transport",
+        "url": "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "transport_per_capita_emissions",
+    "region": "IN",
+    "year": 2023,
+    "value_tonnes_per_person": 0.2461,
+    "source_name": "OWID transport CO2 per capita",
+    "source_url": "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
+    "citations": [
+      {
+        "title": "Our World in Data: Per capita carbon dioxide emissions from transport",
+        "url": "https://ourworldindata.org/grapher/per-capita-co2-transport.csv",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "food_per_capita_emissions",
+    "region": "WORLD",
+    "year": 2015,
+    "value_tonnes_per_person": 2.407,
+    "source_name": "Derived from OWID food emissions with World Bank population",
+    "source_url": "https://ourworldindata.org/grapher/emissions-from-food.csv",
+    "citations": [
+      {
+        "title": "Our World in Data: Greenhouse gas emissions from food",
+        "url": "https://ourworldindata.org/grapher/emissions-from-food.csv",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Population, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "food_per_capita_emissions",
+    "region": "IN",
+    "year": 2015,
+    "value_tonnes_per_person": 0.8487,
+    "source_name": "Derived from OWID food emissions with World Bank population",
+    "source_url": "https://ourworldindata.org/grapher/emissions-from-food.csv",
+    "citations": [
+      {
+        "title": "Our World in Data: Greenhouse gas emissions from food",
+        "url": "https://ourworldindata.org/grapher/emissions-from-food.csv",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Population, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "water_per_capita_emissions",
+    "region": "WORLD",
+    "year": 2021,
+    "value_tonnes_per_person": 0.0225,
+    "source_name": "Derived from World Bank domestic water withdrawals and emission factor",
+    "source_url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
+    "citations": [
+      {
+        "title": "World Bank: Annual freshwater withdrawals, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Domestic share of freshwater withdrawals",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWDM.ZS?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Population, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "metric": "water_per_capita_emissions",
+    "region": "IN",
+    "year": 2022,
+    "value_tonnes_per_person": 0.0115,
+    "source_name": "Derived from World Bank domestic water withdrawals and emission factor",
+    "source_url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
+    "citations": [
+      {
+        "title": "World Bank: Annual freshwater withdrawals, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWTL.K3?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Domestic share of freshwater withdrawals",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/ER.H2O.FWDM.ZS?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      },
+      {
+        "title": "World Bank: Population, total",
+        "url": "https://api.worldbank.org/v2/country/IND;WLD/indicator/SP.POP.TOTL?format=json&per_page=400",
+        "accessed_on": "2026-03-06"
+      }
+    ]
+  }
+]
