@@ -1,11 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { getSurveyDashboard } from "@/lib/server/carbon-api";
 import DashboardClient, { type DashboardPayload } from "./DashboardClient";
-
-const apiBase =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
 type PageProps = {
   params: {
@@ -14,19 +11,12 @@ type PageProps = {
 };
 
 async function getDashboard(surveyId: string): Promise<DashboardPayload> {
-  const response = await fetch(`${apiBase}/v1/surveys/${surveyId}/dashboard`, {
-    cache: "no-store",
-  });
-
-  if (response.status === 404) {
+  try {
+    const payload = await getSurveyDashboard(surveyId);
+    return payload as DashboardPayload;
+  } catch {
     notFound();
   }
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch dashboard (${response.status})`);
-  }
-
-  return (await response.json()) as DashboardPayload;
 }
 
 export default async function DashboardPage({ params }: PageProps) {

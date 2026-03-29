@@ -2,6 +2,8 @@ import Link from "next/link";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { getCurrentEmissionFactors, getMethodology } from "@/lib/server/carbon-api";
+
 type MethodologyItem = {
   id?: string;
   version_name?: string;
@@ -50,9 +52,6 @@ type MethodologyApiPayload =
       }>;
     };
 
-const apiBase =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 const FALLBACK_EQUATION = "Emissions = Activity Data × Emission Factor";
 async function loadCustomEstimationMarkdown(): Promise<string | null> {
   const candidates = ["Custom_Estimation.md", "Custome_Estimation.md"];
@@ -362,39 +361,23 @@ async function getMethodologyData(): Promise<{
   sources: EmissionFactorSource[];
   errorMessage: string | null;
 }> {
-  let payload: MethodologyApiPayload = [];
+  const payload: MethodologyApiPayload = [];
   let methodology: MethodologyItem[] = [];
   let factors: EffectiveEmissionFactor[] = [];
   const errors: string[] = [];
 
   try {
-    const response = await fetch(`${apiBase}/v1/methodology`, { cache: "no-store" });
-    if (!response.ok) {
-      const body = await response.json().catch(() => null);
-      const detail = typeof body?.detail === "string" ? body.detail : null;
-      errors.push(detail || `Methodology API returned ${response.status}.`);
-    } else {
-      payload = (await response.json()) as MethodologyApiPayload;
-      methodology = asMethodologyItems(payload);
-    }
+    const response = await getMethodology();
+    methodology = asMethodologyItems(response as MethodologyApiPayload);
   } catch (error) {
-    const reason = error instanceof Error ? error.message : "Unknown fetch error";
+    const reason = error instanceof Error ? error.message : "Unknown read error";
     errors.push(`Could not load methodology data. ${reason}`);
   }
 
   try {
-    const factorResponse = await fetch(`${apiBase}/v1/emission-factors/current`, {
-      cache: "no-store",
-    });
-    if (!factorResponse.ok) {
-      const body = await factorResponse.json().catch(() => null);
-      const detail = typeof body?.detail === "string" ? body.detail : null;
-      errors.push(detail || `Emission factor API returned ${factorResponse.status}.`);
-    } else {
-      factors = (await factorResponse.json()) as EffectiveEmissionFactor[];
-    }
+    factors = (await getCurrentEmissionFactors()) as EffectiveEmissionFactor[];
   } catch (error) {
-    const reason = error instanceof Error ? error.message : "Unknown fetch error";
+    const reason = error instanceof Error ? error.message : "Unknown read error";
     errors.push(`Could not load emission factors. ${reason}`);
   }
 
