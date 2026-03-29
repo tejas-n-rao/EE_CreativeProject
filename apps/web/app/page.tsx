@@ -138,12 +138,6 @@ export default async function HomePage() {
           tied to household livelihood choices.
         </p>
         <div className="home-cta-row">
-          <Link href="/weekly-survey" className="primary-button">
-            Start Weekly Calculator
-          </Link>
-          <Link href="/monthly-survey" className="secondary-button">
-            Start Monthly Calculator
-          </Link>
           <Link href="/methodology" className="secondary-button">
             View Methodology
           </Link>

@@ -15,7 +15,7 @@ type CategoryPreset = {
   units: string[];
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "").trim();
 
 const CATEGORY_PRESETS: CategoryPreset[] = [
   { category: "electricity", label: "Electricity", units: ["kWh"] },
@@ -140,7 +140,7 @@ export default function SurveyForm() {
     } catch (error) {
       if (error instanceof TypeError) {
         setErrorMessage(
-          `Could not reach API at ${API_BASE}. Ensure FastAPI is running and NEXT_PUBLIC_API_BASE_URL is correct.`,
+          `Could not reach API at ${API_BASE || "same-origin /v1"}. Ensure the API routes are deployed.`,
         );
       } else {
         setErrorMessage(

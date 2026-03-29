@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 
 import DashboardClient, { type DashboardPayload } from "./DashboardClient";
 
-const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const apiBase =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
 type PageProps = {
   params: {
@@ -35,9 +37,6 @@ export default async function DashboardPage({ params }: PageProps) {
       <header className="dashboard-hero">
         <p className="eyebrow">Dashboard</p>
         <h1>Survey Carbon Dashboard</h1>
-        <p>
-          Survey ID: <code>{params.surveyId}</code>
-        </p>
         <Link href="/methodology" className="back-link">
           View methodology
         </Link>

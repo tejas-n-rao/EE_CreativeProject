@@ -19,7 +19,7 @@ type ActivityPayload = {
   value: number;
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "").trim();
 const WEEKS_PER_MONTH = 4.345;
 const DAYS_PER_MONTH = 30;
 
@@ -246,7 +246,7 @@ export default function AccessibleSurveyForm() {
     } catch (error) {
       if (error instanceof TypeError) {
         setErrorMessage(
-          `Could not reach API at ${API_BASE}. Ensure FastAPI is running and NEXT_PUBLIC_API_BASE_URL is correct.`,
+          `Could not reach API at ${API_BASE || "same-origin /v1"}. Ensure the API routes are deployed.`,
         );
       } else {
         setErrorMessage(

@@ -78,6 +78,31 @@ It installs required software via Homebrew, configures Docker compose plugin dis
    docker compose down
    ```
 
+## Vercel Deployment (Single Service)
+
+You can deploy only `apps/web` to Vercel without running `apps/api` separately.
+This repo now includes Next.js route handlers under `apps/web/app/v1/*` that serve:
+
+- `POST /v1/surveys`
+- `POST /v1/surveys/{surveyId}/calculate`
+- `GET /v1/surveys/{surveyId}/dashboard`
+- `GET /v1/methodology`
+- `GET /v1/emission-factors/current`
+
+### Deploy Steps
+
+1. Import this repo into Vercel.
+2. Set **Root Directory** to `apps/web`.
+3. Keep build settings default (`next build`).
+4. Deploy.
+
+No Alembic migration/seed step is required for the Vercel-only deployment path.
+If you still want to use an external API, set:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://your-api-domain
+```
+
 ## Fresh Machine Setup (macOS)
 
 If this is a new machine, run:

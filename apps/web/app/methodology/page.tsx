@@ -50,7 +50,9 @@ type MethodologyApiPayload =
       }>;
     };
 
-const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const apiBase =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 const FALLBACK_EQUATION = "Emissions = Activity Data × Emission Factor";
 async function loadCustomEstimationMarkdown(): Promise<string | null> {
   const candidates = ["Custom_Estimation.md", "Custome_Estimation.md"];
@@ -71,6 +73,214 @@ async function loadCustomEstimationMarkdown(): Promise<string | null> {
     }
   }
   return null;
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function splitTableLine(line: string): string[] {
+  const normalized = line.trim().replace(/^\|/, "").replace(/\|$/, "");
+  return normalized.split("|").map((cell) => cell.trim());
+}
+
+function isTableSeparator(line: string): boolean {
+  const normalized = line.trim().replace(/^\|/, "").replace(/\|$/, "");
+  const cells = normalized.split("|").map((cell) => cell.trim());
+  if (cells.length === 0) {
+    return false;
+  }
+  return cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+}
+
+function startsTable(lines: string[], index: number): boolean {
+  if (index + 1 >= lines.length) {
+    return false;
+  }
+  const header = lines[index].trim();
+  const separator = lines[index + 1].trim();
+  return header.includes("|") && isTableSeparator(separator);
+}
+
+function renderInlineMarkdown(text: string): string {
+  let rendered = escapeHtml(text);
+  const linkTokens: string[] = [];
+  const codeTokens: string[] = [];
+
+  rendered = rendered.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => {
+    const token = `__LINK_TOKEN_${linkTokens.length}__`;
+    linkTokens.push(`<a href="${url}" target="_blank" rel="noreferrer">${label}</a>`);
+    return token;
+  });
+
+  rendered = rendered.replace(/`([^`]+)`/g, (_, code) => {
+    const token = `__CODE_TOKEN_${codeTokens.length}__`;
+    codeTokens.push(`<code>${code}</code>`);
+    return token;
+  });
+
+  rendered = rendered.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  rendered = rendered.replace(/\*(.+?)\*/g, "<em>$1</em>");
+
+  for (let index = 0; index < codeTokens.length; index += 1) {
+    rendered = rendered.replace(`__CODE_TOKEN_${index}__`, codeTokens[index]);
+  }
+  for (let index = 0; index < linkTokens.length; index += 1) {
+    rendered = rendered.replace(`__LINK_TOKEN_${index}__`, linkTokens[index]);
+  }
+
+  return rendered;
+}
+
+function renderMarkdownToHtml(markdown: string): string {
+  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+  const html: string[] = [];
+  let index = 0;
+
+  const isHorizontalRule = (line: string) => /^(-{3,}|\*{3,}|_{3,})$/.test(line.trim());
+  const isHeading = (line: string) => /^(#{1,6})\s+/.test(line.trim());
+  const isUnorderedList = (line: string) => /^[-*]\s+/.test(line.trim());
+  const isOrderedList = (line: string) => /^\d+\.\s+/.test(line.trim());
+  const isCodeFence = (line: string) => line.trim().startsWith("```");
+  const isBlockQuote = (line: string) => line.trim().startsWith(">");
+
+  const isBlockStart = (line: string, lineIndex: number): boolean =>
+    isCodeFence(line) ||
+    isHeading(line) ||
+    isHorizontalRule(line) ||
+    isBlockQuote(line) ||
+    isUnorderedList(line) ||
+    isOrderedList(line) ||
+    startsTable(lines, lineIndex);
+
+  while (index < lines.length) {
+    const current = lines[index];
+    const trimmed = current.trim();
+
+    if (!trimmed) {
+      index += 1;
+      continue;
+    }
+
+    if (isCodeFence(current)) {
+      const language = trimmed.slice(3).trim();
+      index += 1;
+      const codeLines: string[] = [];
+      while (index < lines.length && !lines[index].trim().startsWith("```")) {
+        codeLines.push(lines[index]);
+        index += 1;
+      }
+      if (index < lines.length) {
+        index += 1;
+      }
+      const langAttr = language ? ` data-language="${escapeHtml(language)}"` : "";
+      html.push(`<pre><code${langAttr}>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+      continue;
+    }
+
+    const headingMatch = trimmed.match(/^(#{1,6})\s+(.*)$/);
+    if (headingMatch) {
+      const level = headingMatch[1].length;
+      html.push(`<h${level}>${renderInlineMarkdown(headingMatch[2])}</h${level}>`);
+      index += 1;
+      continue;
+    }
+
+    if (isHorizontalRule(current)) {
+      html.push("<hr />");
+      index += 1;
+      continue;
+    }
+
+    if (isBlockQuote(current)) {
+      const quoteLines: string[] = [];
+      while (index < lines.length && lines[index].trim().startsWith(">")) {
+        quoteLines.push(lines[index].replace(/^\s*>\s?/, "").trim());
+        index += 1;
+      }
+      html.push(`<blockquote><p>${quoteLines.map(renderInlineMarkdown).join("<br />")}</p></blockquote>`);
+      continue;
+    }
+
+    if (startsTable(lines, index)) {
+      const headerCells = splitTableLine(lines[index]).map((cell) => renderInlineMarkdown(cell));
+      index += 2;
+      const bodyRows: string[][] = [];
+
+      while (index < lines.length) {
+        const row = lines[index].trim();
+        if (!row || !row.includes("|")) {
+          break;
+        }
+        bodyRows.push(splitTableLine(lines[index]).map((cell) => renderInlineMarkdown(cell)));
+        index += 1;
+      }
+
+      const headerHtml = headerCells.map((cell) => `<th>${cell}</th>`).join("");
+      const bodyHtml = bodyRows
+        .map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
+        .join("");
+
+      html.push(
+        `<table><thead><tr>${headerHtml}</tr></thead><tbody>${bodyHtml}</tbody></table>`,
+      );
+      continue;
+    }
+
+    if (isUnorderedList(current)) {
+      const items: string[] = [];
+      while (index < lines.length) {
+        const line = lines[index].trim();
+        const match = line.match(/^[-*]\s+(.*)$/);
+        if (!match) {
+          break;
+        }
+        items.push(`<li>${renderInlineMarkdown(match[1])}</li>`);
+        index += 1;
+      }
+      html.push(`<ul>${items.join("")}</ul>`);
+      continue;
+    }
+
+    if (isOrderedList(current)) {
+      const items: string[] = [];
+      while (index < lines.length) {
+        const line = lines[index].trim();
+        const match = line.match(/^\d+\.\s+(.*)$/);
+        if (!match) {
+          break;
+        }
+        items.push(`<li>${renderInlineMarkdown(match[1])}</li>`);
+        index += 1;
+      }
+      html.push(`<ol>${items.join("")}</ol>`);
+      continue;
+    }
+
+    const paragraphLines: string[] = [];
+    while (index < lines.length) {
+      const line = lines[index];
+      if (!line.trim() || isBlockStart(line, index)) {
+        break;
+      }
+      paragraphLines.push(line.trim());
+      index += 1;
+    }
+
+    if (paragraphLines.length > 0) {
+      html.push(`<p>${paragraphLines.map(renderInlineMarkdown).join("<br />")}</p>`);
+      continue;
+    }
+
+    index += 1;
+  }
+
+  return html.join("\n");
 }
 
 function asMethodologyItems(payload: MethodologyApiPayload): MethodologyItem[] {
@@ -197,15 +407,15 @@ async function getMethodologyData(): Promise<{
 export default async function MethodologyPage() {
   const { equation, methodology, factors, sources, errorMessage } = await getMethodologyData();
   const customEstimationMarkdown = await loadCustomEstimationMarkdown();
+  const customEstimationHtml = customEstimationMarkdown
+    ? renderMarkdownToHtml(customEstimationMarkdown)
+    : null;
 
   return (
     <main className="methodology-page">
       <header className="methodology-hero">
         <p className="eyebrow">Methodology</p>
         <h1>How This Calculator Works</h1>
-        <p>
-          Transparent logic for greenhouse-gas accounting and benchmark interpretation.
-        </p>
         <Link href="/" className="back-link">
           Back to home
         </Link>
@@ -217,8 +427,8 @@ export default async function MethodologyPage() {
             <strong>Methodology data is unavailable:</strong> {errorMessage}
           </p>
           <p>
-            Run <code>alembic upgrade head</code> and <code>python scripts/seed_data.py</code>{" "}
-            in <code>apps/api</code>, then reload this page.
+            Ensure the <code>/v1/methodology</code> and <code>/v1/emission-factors/current</code>{" "}
+            API routes are reachable, then reload this page.
           </p>
         </section>
       )}
@@ -340,8 +550,11 @@ export default async function MethodologyPage() {
           and used as the methodology reference for deriving and justifying emission-factor
           estimates.
         </p>
-        {customEstimationMarkdown ? (
-          <pre className="methodology-markdown">{customEstimationMarkdown}</pre>
+        {customEstimationHtml ? (
+          <div
+            className="methodology-markdown"
+            dangerouslySetInnerHTML={{ __html: customEstimationHtml }}
+          />
         ) : (
           <p>
             Could not load <code>data/Custom_Estimation.md</code>.
