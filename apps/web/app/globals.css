@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@10..48,500;10..48,600;10..48,700;10..48,800&family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 
 :root {
-  --font-body: "Sora", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
-  --font-display: "Bricolage Grotesque", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
-  --font-title: "Bricolage Grotesque", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-body: "Outfit", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-title: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
   --color-text: #193025;
   --color-muted: #426552;
@@ -37,9 +37,9 @@
 }
 
 html[data-theme="dark"] {
-  --font-body: "Sora", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
-  --font-display: "Bricolage Grotesque", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
-  --font-title: "Bricolage Grotesque", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-body: "Outfit", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-title: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
   --color-text: #d8f6df;
   --color-muted: #8cb49a;
@@ -433,7 +433,6 @@ html[data-theme="dark"] .sweep-pane-content-animated::after {
   padding: 2rem 1rem 2.5rem;
   display: grid;
   gap: 0.9rem;
-  overflow-x: clip;
 }
 
 .methodology-hero {
@@ -461,7 +460,6 @@ html[data-theme="dark"] .sweep-pane-content-animated::after {
   padding: 0.95rem 1rem;
   box-shadow: var(--shadow-soft), inset 0 1px 0 var(--gloss-highlight);
   max-width: 100%;
-  overflow-x: clip;
 }
 
 .inline-warning {
@@ -503,7 +501,8 @@ html[data-theme="dark"] .sweep-pane-content-animated::after {
   margin: 0 0 0.65rem;
   font-size: 0.9rem;
   overflow-x: auto;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .methodology-cards {
@@ -536,8 +535,7 @@ html[data-theme="dark"] .sweep-pane-content-animated::after {
 .methodology-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 0;
-  table-layout: fixed;
+  min-width: 640px;
   background: var(--color-panel-solid);
 }
 
