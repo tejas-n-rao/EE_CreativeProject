@@ -1,6 +1,7 @@
 :root {
-  --font-body: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
-  --font-display: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-body: "Avenir Next", "Segoe UI Variable", "Segoe UI", "IBM Plex Sans", sans-serif;
+  --font-display: "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", "Gill Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
   --color-text: #193025;
   --color-muted: #426552;
   --color-bg: #f2faf3;
@@ -33,8 +34,9 @@
 }
 
 html[data-theme="dark"] {
-  --font-body: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
-  --font-display: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-body: "Avenir Next", "Segoe UI Variable", "Segoe UI", "IBM Plex Sans", sans-serif;
+  --font-display: "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", "Gill Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
   --color-text: #d8f6df;
   --color-muted: #8cb49a;
   --color-bg: #050a07;
@@ -87,7 +89,7 @@ a {
 }
 
 code {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+  font-family: var(--font-mono);
 }
 
 .theme-toggle {
@@ -121,15 +123,20 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 h1 {
   margin: 0 0 1rem;
-  font-size: 2rem;
+  font-size: clamp(2.05rem, 3.7vw, 2.7rem);
+  line-height: 1.04;
+  font-weight: 800;
+  text-wrap: balance;
 }
 
 .eyebrow {
   margin: 0 0 0.5rem;
+  font-family: var(--font-display);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   font-weight: 700;
