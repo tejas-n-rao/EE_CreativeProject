@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700&display=swap");
 
 :root {
-  --font-body: "Outfit", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
-  --font-display: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
-  --font-title: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-body: "Manrope", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-display: "Chakra Petch", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-title: "Chakra Petch", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
   --color-text: #193025;
   --color-muted: #426552;
@@ -37,9 +37,9 @@
 }
 
 html[data-theme="dark"] {
-  --font-body: "Outfit", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
-  --font-display: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
-  --font-title: "Space Grotesk", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-body: "Manrope", "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-display: "Chakra Petch", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-title: "Chakra Petch", "Avenir Next Demi Bold", "Avenir Next", "Trebuchet MS", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
   --color-text: #d8f6df;
   --color-muted: #8cb49a;
