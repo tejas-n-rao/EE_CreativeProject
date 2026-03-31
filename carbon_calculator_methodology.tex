@@ -16,93 +16,183 @@
 }
 
 \title{Carbon Calculator Methodology}
-\author{Repository-Derived Technical Documentation}
-\date{March 26, 2026}
+\author{Tejas Rao}
+\date{March 30, 2026}
 
 \begin{document}
 \maketitle
 \linespread{1.1}\selectfont
 
-\section{Scope and Unit Conventions}
-This methodology documents the implemented logic in the repository for estimating monthly household greenhouse gas emissions and carbon index scores. The core reporting unit is kgCO\(_2\)e per month.
+\section{Individual Responsibility and Climate Change}
+Climate change is shaped by large economic, political, and technological systems, yet it is also reproduced through ordinary decisions about transport, food, electricity use, water consumption, and household consumption more generally. This project is motivated by the need to make those decisions more legible in quantitative terms without reducing the climate crisis to personal morality alone. The calculator estimates household greenhouse gas emissions from reported activities and compares the result with benchmark values, allowing users to situate their own footprint in relation to wider climatic limits and to national as well as global reference levels.
+
+This motivation may also be read through Jean-Paul Sartre's idea of bad faith. In Sartre's sense, bad faith is not mere ignorance, but the evasion of a reality whose implications one would prefer not to confront. In the context of climate change, this often appears not in climate science itself, but in the social response to it: evidence is acknowledged in principle while its practical demands are deferred, minimized, or displaced elsewhere. This calculator is a modest attempt to work against that evasion. By translating routine household activity into an explicit emissions estimate, it seeks to narrow the distance between what is known about climate change and how everyday life is interpreted in light of that knowledge.
+
+\section{Scope and Reporting Units}
+This document explains the implemented methodology for estimating monthly household greenhouse gas emissions and for calculating comparative carbon index scores.
 
 \begin{itemize}
-  \item Monthly emissions are computed at activity-line level and then aggregated.
-  \item Annual emissions are computed only for index comparison.
-  \item Per-capita benchmark references are in tCO\(_2\)e/person/year.
+  \item The primary reported output is monthly emissions in kilograms of carbon dioxide equivalent (kgCO\(_2\)e/month).
+  \item Annual emissions are computed only to compare the user against annual per-capita benchmarks.
+  \item Benchmark values are expressed in tonnes of carbon dioxide equivalent per person per year (tCO\(_2\)e/person/year).
 \end{itemize}
+
+\section{Definitions, Abbreviations, and Notation}
+\subsection{Core Terminology}
+\begin{itemize}
+  \item \textbf{Activity line}: one row of user activity data, identified by activity category, unit, region code, and date context.
+  \item \textbf{Emission factor}: the amount of greenhouse gas emissions attributed to one unit of activity (for example, kgCO\(_2\)e per kilometre).
+  \item \textbf{Accessible weekly form}: a simplified questionnaire that collects weekly household behaviour and maps it to estimated monthly activity values.
+  \item \textbf{Fallback factor}: a factor used when a region-specific value is unavailable; this implementation falls back to the global (WORLD) value.
+\end{itemize}
+
+\subsection{Abbreviations}
+\begin{longtable}{p{3cm} p{11cm}}
+\toprule
+Abbreviation & Meaning \\
+\midrule
+\endfirsthead
+\toprule
+Abbreviation & Meaning \\
+\midrule
+\endhead
+API & Application Programming Interface \\
+GHG & Greenhouse gas \\
+kgCO\(_2\)e & Kilograms of carbon dioxide equivalent \\
+tCO\(_2\)e & Tonnes of carbon dioxide equivalent \\
+LCA & Life cycle assessment \\
+LPG & Liquefied petroleum gas \\
+NCV & Net calorific value \\
+GWP & Global warming potential \\
+CO\(_2\) & Carbon dioxide \\
+CH\(_4\) & Methane \\
+N\(_2\)O & Nitrous oxide \\
+kWh & Kilowatt-hour \\
+AC & Air conditioner (or air conditioning use, depending on context) \\
+URL & Uniform Resource Locator \\
+IN & Region code representing India \\
+WORLD & Region code representing a global average or global proxy \\
+CEA & Central Electricity Authority (India) \\
+India GHGP & India Greenhouse Gas Program \\
+TJ & Terajoule \\
+kt & Kilotonne \\
+t & Tonne (metric tonne) \\
+km & Kilometre \\
+L & Litre \\
+m\(^3\) & Cubic metre \\
+ORM & Object-relational mapping \\
+SQL & Structured Query Language \\
+JSON & JavaScript Object Notation \\
+CSS & Cascading Style Sheets \\
+npm & Node Package Manager \\
+\bottomrule
+\end{longtable}
+
+\subsection{Notation}
+\begin{longtable}{p{3cm} p{8cm} p{3cm}}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+\endhead
+\(i\) & Activity-line index used in aggregation across user inputs & Dimensionless \\
+\(A_i\) & Activity quantity for activity line \(i\) & Activity-dependent \\
+\(EF_i\) & Emission factor for activity line \(i\) & kgCO\(_2\)e per activity unit \\
+\(E_i\) & Emissions from activity line \(i\) & kgCO\(_2\)e/month \\
+\(E_{\text{monthly}}\) & Total monthly emissions across all activity lines & kgCO\(_2\)e/month \\
+\(E_{\text{annual, kg}}\) & Annual emissions in kilograms & kgCO\(_2\)e/year \\
+\(E_{\text{annual, t}}\) & Annual emissions in tonnes & tCO\(_2\)e/year \\
+\(B_{\text{India}}\) & India per-capita benchmark value & tCO\(_2\)e/person/year \\
+\(B_{\text{World}}\) & World per-capita benchmark value & tCO\(_2\)e/person/year \\
+\(E_{\text{class, monthly, kg}}\) & Monthly category subtotal used for dashboard class comparisons & kgCO\(_2\)e/month \\
+\(E_{\text{class, annual, t}}\) & Annualized category subtotal used for dashboard class comparisons & tCO\(_2\)e/year \\
+\(I_{\text{refrigerator}}\) & Refrigerator indicator: \(1\) if present, \(0\) if absent & Dimensionless \\
+\(j\) & Food item index in diet-factor summation & Dimensionless \\
+\(\text{intake}_{j,\text{kg/day}}\) & Daily mass intake of food item \(j\) & kg/day \\
+\(EF_{j,\text{kgCO}_2\text{e/kg}}\) & Food-level emission factor for item \(j\) & kgCO\(_2\)e/kg \\
+\(EF_{\text{CO}_2}\) & Carbon dioxide emission factor used in the LPG derivation & t/TJ \\
+\(EF_{\text{CH}_4}\) & Methane emission factor used in the LPG derivation & t/TJ \\
+\(EF_{\text{N}_2\text{O}}\) & Nitrous oxide emission factor used in the LPG derivation & t/TJ \\
+\(GWP_{\text{CH}_4}\) & Global warming potential multiplier for methane & Dimensionless \\
+\(GWP_{\text{N}_2\text{O}}\) & Global warming potential multiplier for nitrous oxide & Dimensionless \\
+\bottomrule
+\end{longtable}
 
 \section{Implemented Calculation Pipeline}
 \subsection{Step 1: Input Capture and Normalization}
-Two input modes are implemented:
+The calculator supports two user input modes:
 \begin{itemize}
-  \item \textbf{Monthly form}: user enters monthly activity values directly.
-  \item \textbf{Weekly accessible form}: values are converted to monthly equivalents before API submission.
+  \item \textbf{Monthly form}: the user enters monthly activity values directly.
+  \item \textbf{Accessible weekly form}: the user enters weekly behavioural values; these are converted to monthly quantities before submission to the Application Programming Interface (API).
 \end{itemize}
 
-Weekly to monthly conversion uses:
+General weekly-to-monthly conversion:
 $$
 \text{Monthly value} = \text{Weekly value} \times 4.345
 $$
+The multiplier \(4.345\) is the average number of weeks per month.
 
-Flight conversion uses:
-$$
-\text{Monthly flight passenger-km} = \frac{\text{Flights per year} \times \text{Average flight distance (km)}}{12}
-$$
+For the accessible weekly form, additional proxy conversions are applied:
 
-Accessible-form household proxies:
+Flight activity conversion:
 $$
-\text{Electricity}_{\text{kWh/month}} = 45 + 18 \cdot \text{household size} + 1.2 \cdot 30 \cdot \text{AC hours/day} + 25 \cdot \mathbf{1}_{\text{refrigerator}}
-$$
-
-$$
-\text{Weekly water (L)} = 40 \cdot 7 \cdot \text{household size} + 50 \cdot \text{showers/week} + 70 \cdot \text{laundry loads/week}
+\text{Monthly flight passenger-km} =
+\frac{\text{Flights per year} \times \text{Average flight distance (km)}}{12}
 $$
 
+Electricity proxy:
 $$
-\text{Water}_{\text{m}^3/\text{month}} = \frac{\text{Weekly water (L)} \times 4.345}{1000}
-$$
-
-$$
-\text{LPG}_{\text{kg/month}} = \text{home-cooked meals/week} \times 0.08 \times 4.345
+\text{Electricity}_{\text{kWh/month}} =
+45 + 18 \cdot \text{household size} + 1.2 \cdot 30 \cdot \text{AC hours/day} + 25 \cdot I_{\text{refrigerator}}
 $$
 
-Diet is converted to monthly person-days as:
+Water proxy (first weekly litres, then monthly cubic metres):
 $$
-\text{Diet activity} = 30\ \text{person\_day/month}
+\text{Weekly water (L)} =
+40 \cdot 7 \cdot \text{household size} + 50 \cdot \text{showers/week} + 70 \cdot \text{laundry loads/week}
+$$
+$$
+\text{Water}_{\text{m}^3/\text{month}} =
+\frac{\text{Weekly water (L)} \times 4.345}{1000}
+$$
+
+Liquefied petroleum gas (LPG) cooking proxy:
+$$
+\text{LPG}_{\text{kg/month}} =
+\text{home-cooked meals/week} \times 0.08 \times 4.345
+$$
+
+Diet activity conversion:
+$$
+\text{Diet activity} = 30\ \text{person-day/month}
 $$
 
 \subsection{Step 2: Emission Factor Resolution}
-For each activity line \((\text{category}, \text{unit}, \text{region}, \text{date})\), the API resolves factors in this order:
-\begin{enumerate}
-  \item \textbf{Excel custom override} from \texttt{data/emission\_factors.xlsx}, when custom factor exists.
-  \item \textbf{Database factor} (\texttt{emission\_factors} table) with region match and date validity.
-  \item \textbf{WORLD fallback} if region-specific factor is unavailable.
-  \item \textbf{Excel default row} as final fallback.
-\end{enumerate}
-
-At repository state inspected on March 26, 2026, the Excel sheet contains \textbf{no active custom override rows}; effective factors therefore align with seeded defaults.
+For each activity line \((\text{category}, \text{unit}, \text{region}, \text{date})\), the API resolves an emission factor from \texttt{data/emission\_factors.xlsx}. If a matching region-specific factor is unavailable, the implementation uses the WORLD fallback factor.
 
 \subsection{Step 3: Line Emissions and Aggregation}
 For each activity \(i\):
 $$
 E_i = A_i \times EF_i
 $$
-where \(A_i\) is activity data in native unit and \(EF_i\) is kgCO\(_2\)e per activity unit.
 
-Total monthly footprint:
+The monthly total is:
 $$
 E_{\text{monthly}} = \sum_i E_i
 $$
 
-Implementation detail:
+Implemented rounding protocol:
 \begin{itemize}
-  \item Each line \(E_i\) is rounded to 4 decimal places.
-  \item Total is the sum of rounded lines, then rounded to 4 decimal places.
+  \item Each line emission \(E_i\) is rounded to 4 decimal places.
+  \item The total is computed from these rounded line values.
+  \item The final total is then rounded to 4 decimal places.
 \end{itemize}
 
 \subsection{Step 4: Annualization and Carbon Index}
-Annualization:
+Annualization is computed as:
 $$
 E_{\text{annual, kg}} = 12 \cdot E_{\text{monthly}}
 $$
@@ -110,7 +200,7 @@ $$
 E_{\text{annual, t}} = \frac{E_{\text{annual, kg}}}{1000}
 $$
 
-Index formulas:
+Index scores are computed relative to per-capita benchmark values:
 $$
 \text{India Index} = \frac{E_{\text{annual, t}}}{B_{\text{India}}} \times 100
 $$
@@ -118,56 +208,69 @@ $$
 \text{World Index} = \frac{E_{\text{annual, t}}}{B_{\text{World}}} \times 100
 $$
 
-Indices are rounded to 2 decimal places.
+Both index scores are rounded to 2 decimal places.
 
 \subsection{Step 5: Class-Level Benchmark Comparison (Dashboard)}
-Categories are grouped for class comparison:
+For dashboard benchmarking, activity lines are grouped into class categories:
 \begin{itemize}
-  \item \textbf{Transportation}: petrol, diesel, two-wheeler, bus, metro, rail, short-haul flight.
-  \item \textbf{Food}: diet categories + LPG.
-  \item \textbf{Water}: water supply.
+  \item \textbf{Transportation}: petrol car, diesel car, two-wheeler, bus, metro, rail, short-haul flight.
+  \item \textbf{Food}: diet category emissions and LPG cooking emissions.
+  \item \textbf{Water}: water supply emissions.
 \end{itemize}
 
-Class user annual tonnes:
+Category-level annualization is computed by:
 $$
 E_{\text{class, annual, t}} = \frac{12 \cdot E_{\text{class, monthly, kg}}}{1000}
 $$
 
-\section{Emission Factor Table (Effective Seeded Defaults)}
+\section{Emission Factor Table}
+This table lists the implemented emission factors used by the calculator.
+
+Unit notes for coded units used in this table:
+\begin{itemize}
+  \item \texttt{person\_day} means one person following a diet pattern for one day.
+  \item \texttt{passenger\_km} means one passenger travelling one kilometre.
+\end{itemize}
+
 \small
-\begin{longtable}{p{2.5cm} p{2cm} p{1cm} p{1.7cm} p{1.7cm} p{2.2cm} p{4.2cm}}
+\begin{longtable}{p{2.5cm} p{2.5cm} p{1.75cm} p{1.75cm} p{2.2cm} p{4cm}}
 \toprule
-Activity & Category Key & Region & Unit & Factor (kgCO\(_2\)e/unit) & Source (Name, Year) & Source URL \\
+Activity & Region & Unit & Factor (kgCO\(_2\)e/unit) & Source (Name, Year) & Source URL \\
 \midrule
 \endfirsthead
 \toprule
-Activity & Category Key & Region & Unit & Factor (kgCO\(_2\)e/unit) & Source (Name, Year) & Source URL \\
+Activity & Region & Unit & Factor (kgCO\(_2\)e/unit) & Source (Name, Year) & Source URL \\
 \midrule
 \endhead
-Bus & \texttt{bus\_km} & WORLD & km & 0.097 & Our World in Data, 2025 & \url{https://ourworldindata.org/travel-carbon-footprint} \\
-Diesel Car & \texttt{diesel\_car\_km} & WORLD & km & 0.171 & Our World in Data, 2025 & \url{https://ourworldindata.org/travel-carbon-footprint} \\
-Diet (Meat-heavy) & \texttt{diet\_meat\_heavy\_day} & WORLD & person\_day & 4.850 & Custom, 2025 & \url{https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf} \\
-Diet (Mixed) & \texttt{diet\_mixed\_day} & WORLD & person\_day & 2.750 & Custom, 2025 & \url{https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf} \\
-Diet (Plant-based) & \texttt{diet\_plant\_based\_day} & WORLD & person\_day & 1.800 & Custom, 2025 & \url{https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf} \\
-Electricity & \texttt{electricity} & IN & kWh & 0.757 & CEA, 2025 & \url{https://www.climatiq.io/data/emission-factor/34488b8a-0e4a-47e1-a309-8a15d3cf5f35?utm_source=chatgpt.com} \\
-Short-haul Flight & \texttt{flight\_shorthaul} & IN & passenger\_km & 0.121 & India GHGP, 2014 & \url{https://indiaghgp.org} \\
-Cooking Gas (LPG) & \texttt{lpg\_kg} & IN & kg & 2.990 & Custom, 2025 & \url{https://wgbis.ces.iisc.ac.in/energy/paper/GHG_footprint/RSER_bharath2015.pdf} \\
-Metro & \texttt{metro\_km} & WORLD & km & 0.041 & Custom, 2025 & \url{https://www.researchgate.net/publication/300425890_Energy_use_and_carbon_dioxide_emissions_assessment_in_the_lifecycle_of_passenger_rail_systems_The_case_of_the_Rio_de_Janeiro_Metro} \\
-Petrol Car & \texttt{petrol\_car\_km} & WORLD & km & 0.171 & Our World in Data, India GHGP, 2025 & \url{https://ourworldindata.org/travel-carbon-footprint} \\
-Rail & \texttt{rail\_km} & IN & km & 0.035 & India GHGP, 2025 & \url{https://indiaghgp.org} \\
-Two-wheeler & \texttt{two\_wheeler\_km} & IN & km & 0.035 & India GHGP, 2025 & \url{https://www.researchgate.net/publication/343818309_India_Specific_Road_Transport_Emission_Factors} \\
-Water Supply & \texttt{water\_supply\_m3} & WORLD & m\(^3\) & 0.344 & UK Environment Agency, 2025 & (URL not provided in seed data) \\
+Bus & WORLD & km & 0.097 & Our World in Data, 2025 & \url{https://ourworldindata.org/travel-carbon-footprint} \\
+Diesel Car & WORLD & km & 0.171 & Our World in Data, 2025 & \url{https://ourworldindata.org/travel-carbon-footprint} \\
+Diet (Meat-heavy) & WORLD & person\_day & 4.850 & Custom, 2025 & \url{https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf} \\
+Diet (Mixed) & WORLD & person\_day & 2.750 & Custom, 2025 & \url{https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf} \\
+Diet (Plant-based) & WORLD & person\_day & 1.800 & Custom, 2025 & \url{https://www.bcia.com/sites/default/files/imce/Branch%20PD/Vic%26Islands%20branch/Poore-Nemecek-2018.pdf} \\
+Electricity & IN & kWh & 0.757 & CEA, 2025 & \url{https://www.climatiq.io/data/emission-factor/34488b8a-0e4a-47e1-a309-8a15d3cf5f35?utm_source=chatgpt.com} \\
+Short-haul Flight & IN & passenger\_km & 0.121 & India GHGP, 2014 & \url{https://indiaghgp.org} \\
+Cooking Gas (LPG) & IN & kg & 2.990 & Custom, 2025 & \url{https://wgbis.ces.iisc.ac.in/energy/paper/GHG_footprint/RSER_bharath2015.pdf} \\
+Metro & WORLD & km & 0.041 & Custom, 2025 & \url{https://www.researchgate.net/publication/300425890_Energy_use_and_carbon_dioxide_emissions_assessment_in_the_lifecycle_of_passenger_rail_systems_The_case_of_the_Rio_de_Janeiro_Metro} \\
+Petrol Car & WORLD & km & 0.171 & Our World in Data, India GHGP, 2025 & \url{https://ourworldindata.org/travel-carbon-footprint} \\
+Rail & IN & km & 0.035 & India GHGP, 2025 & \url{https://indiaghgp.org} \\
+Two-wheeler & IN & km & 0.035 & India GHGP, 2025 & \url{https://www.researchgate.net/publication/343818309_India_Specific_Road_Transport_Emission_Factors} \\
+Water Supply & WORLD & m\(^3\) & 0.344 & UK Environment Agency, 2025 & (URL not provided in seed data) \\
 \bottomrule
 \end{longtable}
 \normalsize
 
 \section{Custom Factor Derivation Methods}
-\subsection{Diet Factors (Custom)}
-The repository's custom estimation note (\texttt{data/Custom\_Estimation.md}) derives diet factors from food-level life cycle assessment (LCA) intensities, primarily Poore and Nemecek (2018).
+For selected activities, a direct factor in kgCO\(_2\)e per implemented unit was not available in the seed dataset. In those cases, the repository uses documented custom derivations.
 
-General diet construction formula:
+\subsection{Diet Factors}
+The repository note \texttt{data/Custom\_Estimation.md} derives diet factors from food-level life cycle assessment (LCA) intensities, primarily based on Poore and Nemecek (2018).
+
+General diet construction equation:
 $$
-EF_{\text{diet}} = \sum_j \left(\text{intake}_{j,\text{kg/day}} \times EF_{j,\text{kgCO}_2\text{e/kg}}\right)
+EF_{\text{diet}} = \sum_j
+\left(
+\text{intake}_{j,\text{kg/day}} \times EF_{j,\text{kgCO}_2\text{e/kg}}
+\right)
 $$
 
 Raw archetype outputs documented in the repository:
@@ -181,7 +284,7 @@ $$
 EF_{\text{plant-based, raw}} = 2.85\ \text{kgCO}_2\text{e/day}
 $$
 
-After adjustment for practical consumption effects (food waste, edible portion correction, retail-versus-consumption mass, and caloric normalization), the calculator uses:
+After practical adjustment steps (food waste allowance, edible-portion correction, retail-to-consumption mass correction, and caloric normalization), the implemented factors are:
 $$
 EF_{\text{diet, meat-heavy}} = 4.85\ \text{kgCO}_2\text{e/person-day}
 $$
@@ -192,85 +295,74 @@ $$
 EF_{\text{diet, plant-based}} = 1.80\ \text{kgCO}_2\text{e/person-day}
 $$
 
-\subsection{LPG Factor (Custom)}
-The LPG factor is derived via NCV and pollutant factors (CO\(_2\), CH\(_4\), N\(_2\)O), then converted to CO\(_2\)e with GWP multipliers.
+\subsection{LPG Factor}
+The LPG factor is derived using net calorific value (NCV), pollutant emission factors, and global warming potential (GWP) multipliers.
 
-General conversion:
+General equation:
 $$
 EF_{\text{fuel, kgCO}_2\text{e/kg}} =
-\text{NCV}_{\text{TJ/kg}}
+\text{NCV}
 \left[
-EF_{\text{CO}_2,\text{t/TJ}}
- + EF_{\text{CH}_4,\text{t/TJ}} \cdot GWP_{\text{CH}_4}
- + EF_{\text{N}_2\text{O},\text{t/TJ}} \cdot GWP_{\text{N}_2\text{O}}
+EF_{\text{CO}_2}
++ EF_{\text{CH}_4} \cdot GWP_{\text{CH}_4}
++ EF_{\text{N}_2\text{O}} \cdot GWP_{\text{N}_2\text{O}}
 \right]
 $$
 
-Repository calculation constants:
+Repository constants:
 \begin{itemize}
-  \item NCV \(= 47.3\ \text{TJ/kt} = 0.0473\ \text{TJ/kg}\)
-  \item \(EF_{\text{CO}_2}=63.1\ \text{t/TJ}\), \(EF_{\text{CH}_4}=0.005\ \text{t/TJ}\), \(EF_{\text{N}_2\text{O}}=0.0001\ \text{t/TJ}\)
-  \item \(GWP_{\text{CH}_4}=28\), \(GWP_{\text{N}_2\text{O}}=265\)
+  \item \(\text{NCV} = 47.3\ \text{TJ/kt fuel}\)
+  \item \(EF_{\text{CO}_2} = 63.1\ \text{t/TJ}\), \(EF_{\text{CH}_4} = 0.005\ \text{t/TJ}\), \(EF_{\text{N}_2\text{O}} = 0.0001\ \text{t/TJ}\)
+  \item \(GWP_{\text{CH}_4} = 28\), \(GWP_{\text{N}_2\text{O}} = 265\)
 \end{itemize}
 
-Computed components:
+Computed components (as implemented in the repository):
 $$
-\text{CO}_2 = 63.1 \times 0.0473 = 2.9836\ \text{kgCO}_2/\text{kg}
-$$
-$$
-\text{CH}_4\text{ as CO}_2\text{e} = (0.005 \times 0.0473)\times 28 = 0.00662\ \text{kgCO}_2\text{e/kg}
+\text{CO}_2\ \text{component} = 2.9836\ \text{kgCO}_2\text{e/kg}
 $$
 $$
-\text{N}_2\text{O as CO}_2\text{e} = (0.0001 \times 0.0473)\times 265 = 0.00125\ \text{kgCO}_2\text{e/kg}
+\text{CH}_4\ \text{component (as CO}_2\text{e)} = 0.00662\ \text{kgCO}_2\text{e/kg}
+$$
+$$
+\text{N}_2\text{O component (as CO}_2\text{e)} = 0.00125\ \text{kgCO}_2\text{e/kg}
 $$
 $$
 EF_{\text{LPG}} = 2.9836 + 0.00662 + 0.00125 \approx 2.99\ \text{kgCO}_2\text{e/kg}
 $$
 
-\subsection{Metro Factor (Custom Note)}
-The custom note indicates a planning range of approximately \(0.03\) to \(0.05\) kgCO\(_2\)e/passenger-km for electric urban rail/metro contexts, with midpoint selection rationale. The seeded operational value in this repository is:
+\subsection{Metro}
+The custom note documents an indicative operational range of approximately \(0.03\) to \(0.05\) kgCO\(_2\)e per passenger-kilometre for electric urban rail systems, and then selects a midpoint-style value for implementation.
 $$
 EF_{\text{metro}} = 0.041\ \text{kgCO}_2\text{e/km}
 $$
+In this implementation, one travelled kilometre in the metro activity input is interpreted as one passenger-kilometre.
 
 \section{Benchmark Dataset Used for Indexing}
-Index benchmarks used by the API:
+The API uses the following annual per-capita greenhouse gas (GHG) benchmarks:
 \begin{itemize}
-  \item India annual per-capita GHG benchmark: \(2.9377\) tCO\(_2\)e/person/year (2024).
-  \item World annual per-capita GHG benchmark: \(6.6691\) tCO\(_2\)e/person/year (2024).
+  \item India benchmark: \(2.9377\) tCO\(_2\)e/person/year (2024).
+  \item World benchmark: \(6.6691\) tCO\(_2\)e/person/year (2024).
 \end{itemize}
 
-Additional class benchmark metrics (transport, food, water) are included for dashboard comparison and are seeded in \texttt{data/db\_benchmark\_stats.json}.
+Additional category-level class benchmark statistics (transportation, food, and water) are used in the dashboard and are seeded in \texttt{data/db\_benchmark\_stats.json}.
 
 \section{Limitations}
 \begin{itemize}
-  \item The model applies direct activity-factor multiplication and omits many second-order lifecycle effects.
-  \item Several factors are scenario-based custom estimates (not universal regulatory constants), especially diet and LPG.
-  \item Regional specificity is partial; unresolved regional gaps are intentionally filled by WORLD fallback factors.
-  \item Benchmark years differ by metric (e.g., annual, transport, food, water), which may affect strict comparability.
-  \item Accessible-form utility proxies are heuristic and may diverge from metered household data.
+  \item The model uses direct activity-by-factor multiplication and does not include many second-order life cycle effects.
+  \item Several factors are scenario-dependent custom estimates, especially for diet and LPG.
+  \item Region-specific coverage is incomplete; when required, WORLD fallback values are applied.
+  \item Benchmark datasets are drawn from different years across metrics, which limits strict cross-metric comparability.
+  \item Accessible weekly form utility proxies are heuristic and may differ from metered household records.
 \end{itemize}
 
-\section{Tech Stack (Concise)}
+\section*{Technology Stack}
 \begin{itemize}
-  \item \textbf{Backend}: FastAPI, SQLAlchemy ORM, Alembic migrations, Pydantic, PostgreSQL/SQLite.
-  \item \textbf{Frontend}: Next.js (App Router), React, TypeScript, custom CSS.
-  \item \textbf{Data Assets}: JSON seed files, editable Excel factor sheet (\texttt{data/emission\_factors.xlsx}).
-  \item \textbf{Tooling}: Pytest, npm workspaces, Docker Compose, ESLint, Prettier.
+  \item \textbf{Backend}: FastAPI, SQLAlchemy object-relational mapping (ORM), Alembic migrations, Pydantic, PostgreSQL/SQLite databases.
+  \item \textbf{Frontend}: Next.js (Application Router), React, TypeScript, and custom Cascading Style Sheets (CSS).
+  \item \textbf{Data assets}: JavaScript Object Notation (JSON) seed files and an editable spreadsheet factor sheet (\texttt{data/emission\_factors.xlsx}).
+  \item \textbf{Tooling}: Pytest, Node Package Manager (npm) workspaces, Docker Compose, ESLint, and Prettier.
 \end{itemize}
 
-\section{Repository Sources Used}
-\begin{itemize}
-  \item \texttt{apps/api/app/services/calculation\_engine.py}
-  \item \texttt{apps/api/app/services/emission\_factor\_sheet.py}
-  \item \texttt{apps/api/app/services/carbon\_index.py}
-  \item \texttt{apps/web/app/accessible-survey/AccessibleSurveyForm.tsx}
-  \item \texttt{apps/web/app/survey/SurveyForm.tsx}
-  \item \texttt{apps/web/app/dashboard/[surveyId]/DashboardClient.tsx}
-  \item \texttt{data/db\_emission\_factors.json}
-  \item \texttt{data/db\_benchmark\_stats.json}
-  \item \texttt{data/Custom\_Estimation.md}
-  \item \texttt{README.md}
-\end{itemize}
+\noindent The repository for the carbon calculator, including installation steps, is available at: \url{https://github.com/tejas-n-rao/EE_CreativeProject}. A deployed web version is available at: \url{https://ee-creative-project-web.vercel.app/}.
 
 \end{document}

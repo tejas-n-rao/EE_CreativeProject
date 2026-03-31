@@ -131,8 +131,8 @@ export default async function HomePage() {
   return (
     <main className="home-page">
       <section className="home-hero">
-        <p className="eyebrow">Climate + Livelihood Studio</p>
-        <h1>Carbon Calculator</h1>
+        <p className="eyebrow">a carbon calculator</p>
+        <h1>CliMetrics: A Look into the Carbon Mirror</h1>
         <p>
           Estimate your footprint, compare against benchmarks, and explore practical climate facts
           tied to household livelihood choices.

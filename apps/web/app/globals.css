@@ -311,6 +311,49 @@ h1 {
   margin: 0 0 0.4rem;
 }
 
+.philosophy-pane-content {
+  margin-top: 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-border-strong);
+  padding: 0.75rem;
+  background: linear-gradient(130deg, var(--color-bg-soft) 0%, transparent 100%);
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.philosophy-pane-content p {
+  margin: 0 0 0.45rem;
+}
+
+.philosophy-pane-content p:last-child {
+  margin-bottom: 0;
+}
+
+.philosophy-image-placeholder {
+  border: 1px dashed var(--color-accent-soft-border);
+  border-radius: 10px;
+  background: linear-gradient(145deg, var(--color-panel-solid) 0%, var(--color-accent-soft) 100%);
+  min-height: 170px;
+  display: grid;
+  place-content: center;
+  gap: 0.22rem;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.philosophy-image-placeholder span {
+  color: var(--color-accent-strong);
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+.philosophy-image-placeholder small {
+  font-size: 0.78rem;
+}
+
 html[data-theme="dark"] .sweep-pane-content-animated {
   position: relative;
   overflow: hidden;
@@ -1290,6 +1333,14 @@ html[data-theme="dark"] .sweep-pane-content-animated::after {
 
   .mode-grid {
     grid-template-columns: 1fr;
+  }
+
+  .philosophy-pane-content {
+    grid-template-columns: 1fr;
+  }
+
+  .philosophy-image-placeholder {
+    min-height: 140px;
   }
 
   .theme-toggle {

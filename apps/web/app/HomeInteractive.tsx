@@ -66,8 +66,36 @@ export default function HomeInteractive({
     <section className="interactive-section">
       <header>
         <p className="eyebrow">Interactive Fact Deck</p>
-        <h2>Climate and Livelihood Fun Facts</h2>
+        <h2>Fun Facts</h2>
       </header>
+
+      <article className="sweep-pane philosophy-pane">
+        <div className="sweep-pane-header">
+          <h3>Philosophical Motivation</h3>
+        </div>
+        <div className="philosophy-pane-content">
+          <div>
+            <p>
+              Jean-Paul Sartre described bad faith as evasion of a truth that one already
+              recognizes at some level. In the climate context, this appears when evidence is
+              accepted in principle but postponed in practice.
+            </p>
+            <p>
+              This calculator is a small instrument against that drift. It translates ordinary
+              household activity into explicit carbon estimates, helping reduce the distance between
+              climate knowledge and everyday interpretation.
+            </p>
+          </div>
+          <div
+            className="philosophy-image-placeholder"
+            role="img"
+            aria-label="Placeholder for philosophical motivation image"
+          >
+            <span>Image Placeholder</span>
+            <small>Jean-Paul Sartre / Bad Faith</small>
+          </div>
+        </div>
+      </article>
 
       <article className="sweep-pane">
         <div className="sweep-pane-header">
