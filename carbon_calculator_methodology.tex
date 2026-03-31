@@ -15,7 +15,7 @@
   linkcolor=black
 }
 
-\title{Carbon Calculator Methodology}
+\title{CliMetrics: A Look into the Carbon Mirror}
 \author{Tejas Rao}
 \date{March 30, 2026}
 
@@ -23,10 +23,15 @@
 \maketitle
 \linespread{1.1}\selectfont
 
-\section{Individual Responsibility and Climate Change}
-Climate change is shaped by large economic, political, and technological systems, yet it is also reproduced through ordinary decisions about transport, food, electricity use, water consumption, and household consumption more generally. This project is motivated by the need to make those decisions more legible in quantitative terms without reducing the climate crisis to personal morality alone. The calculator estimates household greenhouse gas emissions from reported activities and compares the result with benchmark values, allowing users to situate their own footprint in relation to wider climatic limits and to national as well as global reference levels.
+\section{Introduction}
+Climate change is shaped by large economic, political, and technological systems, yet it is also mediated through repeated everyday decisions about transport, food, energy use, water consumption, and household consumption more broadly. This dual character creates a persistent tension between what is collectively known and how that knowledge is lived, deferred, or quietly set aside in the rhythms of ordinary life. In this sense, Jean-Paul Sartre's idea of \textit{bad faith} (originally \textit{Mauvaise foi}) offers an uncannily apt metaphor. This idea describes not mere ignorance, but a subtle evasion: a turning away from a reality one already recognizes. It is the quiet discipline of not looking too closely, the capacity to acknowledge a truth in the abstract while holding it at a distance in practice. In the context of climate change, this appears less as outright denial of science than as a patterned social response, where evidence is accepted in principle but its practical demands are deferred, minimized, or displaced elsewhere.
 
-This motivation may also be read through Jean-Paul Sartre's idea of bad faith. In Sartre's sense, bad faith is not mere ignorance, but the evasion of a reality whose implications one would prefer not to confront. In the context of climate change, this often appears not in climate science itself, but in the social response to it: evidence is acknowledged in principle while its practical demands are deferred, minimized, or displaced elsewhere. This calculator is a modest attempt to work against that evasion. By translating routine household activity into an explicit emissions estimate, it seeks to narrow the distance between what is known about climate change and how everyday life is interpreted in light of that knowledge.
+Against this background, the CliMetrics project is a modest effort that aims to help people recognize the gap between abstract recognition and lived practice. CliMetrics is a calculator that estimates household greenhouse gas emissions from reported activities and compares the result with benchmark values, enabling users to situate their own footprint in relation to national and global reference levels. It also allows users to simulate practical, feasible ways to reduce their footprint.
+
+This document sets out the methodology used by CliMetrics to estimate household greenhouse gas emissions and comparative carbon index scores. It explains the scope of the model, the units of reporting, the meaning of key terms and symbols, and the sequence by which user inputs are converted into emissions estimates. It also describes the emission factors used by the calculator, the logic behind custom factor derivations where direct values are unavailable, the benchmark datasets used for comparison, and the principal limitations of the approach.
+
+The repository for this carbon calculator, including installation steps, is available at: \url{https://github.com/tejas-n-rao/EE_CreativeProject}. A deployed web version is available at: \url{https://ee-creative-project-web.vercel.app/}.
+
 
 \section{Scope and Reporting Units}
 This document explains the implemented methodology for estimating monthly household greenhouse gas emissions and for calculating comparative carbon index scores.
@@ -80,11 +85,6 @@ t & Tonne (metric tonne) \\
 km & Kilometre \\
 L & Litre \\
 m\(^3\) & Cubic metre \\
-ORM & Object-relational mapping \\
-SQL & Structured Query Language \\
-JSON & JavaScript Object Notation \\
-CSS & Cascading Style Sheets \\
-npm & Node Package Manager \\
 \bottomrule
 \end{longtable}
 
@@ -223,6 +223,37 @@ $$
 E_{\text{class, annual, t}} = \frac{12 \cdot E_{\text{class, monthly, kg}}}{1000}
 $$
 
+\subsection{Step 6: Decrease in Emissions Calculation (Scenario Simulator)}
+The dashboard scenario simulator applies a user-selected percentage reduction to one category line and then recomputes the total footprint.
+
+Let \(E_{\text{selected}}\) be the current monthly emissions of the selected line (kgCO\(_2\)e/month), and let \(r\) be the selected reduction percentage.
+
+Selected-line decrease:
+$$
+\Delta E_{\text{selected}} = E_{\text{selected}} \cdot \frac{r}{100}
+$$
+
+Projected monthly total:
+$$
+E_{\text{projected, monthly}} =
+\max\left(E_{\text{monthly}} - \Delta E_{\text{selected}},\ 0\right)
+$$
+
+Projected annual total in tonnes:
+$$
+E_{\text{projected, annual, t}} =
+\frac{12 \cdot E_{\text{projected, monthly}}}{1000}
+$$
+
+Displayed impact share of current total:
+$$
+\text{Impact share (\%)} =
+\begin{cases}
+\dfrac{\Delta E_{\text{selected}}}{E_{\text{monthly}}} \cdot 100, & E_{\text{monthly}} > 0 \\
+0, & E_{\text{monthly}} = 0
+\end{cases}
+$$
+
 \section{Emission Factor Table}
 This table lists the implemented emission factors used by the calculator.
 
@@ -233,7 +264,7 @@ Unit notes for coded units used in this table:
 \end{itemize}
 
 \small
-\begin{longtable}{p{2.5cm} p{2.5cm} p{1.75cm} p{1.75cm} p{2.2cm} p{4cm}}
+\begin{longtable}{p{2.5cm} p{2.5cm} p{1.75cm} p{1.8cm} p{2.25cm} p{4cm}}
 \toprule
 Activity & Region & Unit & Factor (kgCO\(_2\)e/unit) & Source (Name, Year) & Source URL \\
 \midrule
@@ -363,6 +394,7 @@ Additional category-level class benchmark statistics (transportation, food, and 
   \item \textbf{Tooling}: Pytest, Node Package Manager (npm) workspaces, Docker Compose, ESLint, and Prettier.
 \end{itemize}
 
-\noindent The repository for the carbon calculator, including installation steps, is available at: \url{https://github.com/tejas-n-rao/EE_CreativeProject}. A deployed web version is available at: \url{https://ee-creative-project-web.vercel.app/}.
+\subsection*{Closing Note}
+If, as Sartre suggests, we are always free to act, then the question is what we choose to do with that freedom in the face of what we already know. If we are indeed free, what prevents us from acting differently in the face of climate change?
 
 \end{document}

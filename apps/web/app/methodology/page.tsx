@@ -563,7 +563,33 @@ export default async function MethodologyPage() {
       </section>
 
       <section className="methodology-section">
-        <h2>5) Emission Factor Estimation Notes</h2>
+        <h2>5) How Decrease in Emissions Is Calculated</h2>
+        <p>
+          The scenario simulator applies a percentage reduction to one selected category line and
+          then recomputes the total.
+        </p>
+        <ul>
+          <li>
+            <strong>Selected-line decrease (kgCO2e/month):</strong> selected line value
+            {" "}x{" "}reduction percentage / 100
+          </li>
+          <li>
+            <strong>Projected monthly total:</strong> current monthly total - selected-line decrease
+            (bounded at 0)
+          </li>
+          <li>
+            <strong>Projected annual total:</strong> projected monthly total x 12 / 1000
+            (reported in tCO2e/year)
+          </li>
+          <li>
+            <strong>Displayed impact percentage:</strong> selected-line decrease / current monthly
+            total x 100
+          </li>
+        </ul>
+      </section>
+
+      <section className="methodology-section">
+        <h2>6) Emission Factor Estimation Notes</h2>
         <p>
           The following content is loaded directly from <code>data/Custom_Estimation.md</code>{" "}
           and used as the methodology reference for deriving and justifying emission-factor
@@ -582,7 +608,7 @@ export default async function MethodologyPage() {
       </section>
 
       <section className="methodology-section">
-        <h2>6) Limitations</h2>
+        <h2>7) Limitations</h2>
         <ul>
           <li>
             <strong>Averages:</strong> Per-capita benchmarks are population averages and do
