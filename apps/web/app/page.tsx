@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import Link from "next/link";
+import Image from "next/image";
 
 import HomeInteractive, { type FunFactTemplate } from "./HomeInteractive";
 
@@ -214,6 +215,39 @@ export default async function HomePage() {
             </p>
           </article>
         </div>
+      </section>
+
+      <section className="interactive-section">
+        <header>
+          <p className="eyebrow">Conceptual Lens</p>
+          <h2>philosophical motivation</h2>
+        </header>
+        <article className="sweep-pane">
+          <div className="philosophy-pane-content">
+            <div>
+              <p>
+                Jean-Paul Sartre described bad faith as evasion of a truth one already recognizes.
+                In the climate context, this often appears when evidence is accepted in principle
+                but deferred in practice.
+              </p>
+              <p>
+                This calculator is a small response to that gap. By translating routine household
+                choices into explicit emissions estimates, it helps connect what is known about
+                climate change to everyday interpretation and action.
+              </p>
+            </div>
+            <div className="philosophy-image-placeholder">
+              <Image
+                src="/Sartre_image.png"
+                alt="Portrait of Jean-Paul Sartre"
+                width={700}
+                height={700}
+                className="philosophy-image"
+              />
+              <p className="philosophy-image-credit">Image credit: Times Literary Supplement</p>
+            </div>
+          </div>
+        </article>
       </section>
 
       <HomeInteractive facts={facts} />
